@@ -7,20 +7,19 @@ try {
   if (fs.existsSync(targetFile)) {
     let content = fs.readFileSync(targetFile, 'utf8');
     
-    // Check if the worklets plugin is present and not commented out
-    if (content.includes('"react-native-worklets/plugin"')) {
-      console.log('Patching react-native-css-interop/babel.js to remove react-native-worklets/plugin...');
+    // For Reanimated 4, the worklets plugin MUST be enabled/uncommented
+    if (content.includes('// "react-native-worklets/plugin"')) {
+      console.log('Patching react-native-css-interop/babel.js to ENABLE react-native-worklets/plugin for Reanimated 4...');
       
-      // Replace the hardcoded plugin with a commented version or remove it
       content = content.replace(
-        '"react-native-worklets/plugin"',
-        '// "react-native-worklets/plugin" (commented out by postinstall script for Reanimated 3 compatibility)'
+        '// "react-native-worklets/plugin"',
+        '"react-native-worklets/plugin"'
       );
       
       fs.writeFileSync(targetFile, content, 'utf8');
-      console.log('Successfully patched react-native-css-interop/babel.js!');
+      console.log('Successfully enabled react-native-worklets/plugin in react-native-css-interop/babel.js!');
     } else {
-      console.log('react-native-css-interop/babel.js is already patched or does not contain worklets plugin.');
+      console.log('react-native-worklets/plugin is already enabled or configured.');
     }
   } else {
     console.log('react-native-css-interop/babel.js not found. Skipping patch.');

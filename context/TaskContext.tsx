@@ -5,6 +5,7 @@ import { toast } from "@/lib/toast";
 
 interface TaskContextType {
   tasks: Task[];
+  isLoaded: boolean;
   addTask: (task: {
     title: string;
     description: string;
@@ -137,6 +138,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     <TaskContext.Provider
       value={{
         tasks,
+        isLoaded,
         addTask,
         deleteTask,
         updateTask,
