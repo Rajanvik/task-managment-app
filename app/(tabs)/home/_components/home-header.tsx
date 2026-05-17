@@ -2,12 +2,14 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { RealTimeClock } from './real-time-clock';
 
 export function HomeHeader() {
   return (
     <View className="pt-14 pb-12 px-6 relative overflow-hidden">
       <View className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full" />
 
+      {/* Greeting and Profile Row */}
       <View className="flex-row justify-between items-center z-10">
         <View>
           <Text className="text-3xl font-extrabold tracking-tight text-foreground">
@@ -25,6 +27,12 @@ export function HomeHeader() {
           <AvatarFallback>RK</AvatarFallback>
         </Avatar>
       </View>
+
+      {/* Real-time Clock Component */}
+      <View className="z-10">
+        <RealTimeClock />
+      </View>
     </View>
   );
 }
+
