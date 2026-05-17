@@ -37,8 +37,7 @@
         {
           "android": {
             "enableProguardInReleaseBuilds": false,
-            "enableShrinkResourcesInReleaseBuilds": false,
-            "enableMinifyInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": false
           }
         }
       ],
