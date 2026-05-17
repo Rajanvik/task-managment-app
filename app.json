@@ -40,7 +40,8 @@
             "enableShrinkResourcesInReleaseBuilds": true,
             "extraBuildProps": {
               "reactNativeArchitectures": "arm64-v8a"
-            }
+            },
+            "enableMinifyInReleaseBuilds": true
           }
         }
       ],
@@ -69,7 +70,10 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "e4d712e6-9a35-447f-b212-64275e356495"
+      }
     }
   }
 }
