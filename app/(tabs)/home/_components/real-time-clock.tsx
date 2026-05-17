@@ -60,7 +60,7 @@ export function RealTimeClock() {
   }, [hours]);
 
   return (
-    <View className="mt-5 pt-4 gap-3.5">
+    <View className="pt-4 gap-3.5">
       {/* Row 1: Dynamic Greeting (Left) & Today's Date Status (Right) */}
       <View className="flex-row items-center justify-between">
         {/* Dynamic Greeting with Glass Icon Wrapper */}

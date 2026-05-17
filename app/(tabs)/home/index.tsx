@@ -11,14 +11,18 @@ import { FooterCredit } from "./_components/footer-credit";
 
 export default function HomeScreen() {
   const { tasks } = useTasks();
-  const totalTasks = tasks.length;
-  const pendingTasks = tasks.filter((t: Task) => t.status === "Pending").length;
-  const completedTasks = tasks.filter(
-    (t: Task) => t.status === "Completed",
-  ).length;
-  
-  const progressPercentage =
-    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const { totalTasks, pendingTasks, completedTasks, progressPercentage } = React.useMemo(() => {
+    const total = tasks.length;
+    const pending = tasks.filter((t: Task) => t.status === "Pending").length;
+    const completed = tasks.filter((t: Task) => t.status === "Completed").length;
+    const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+    return {
+      totalTasks: total,
+      pendingTasks: pending,
+      completedTasks: completed,
+      progressPercentage: progress,
+    };
+  }, [tasks]);
 
   return (
     <View className="flex-1 bg-background">

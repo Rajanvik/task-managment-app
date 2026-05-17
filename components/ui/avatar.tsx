@@ -1,6 +1,8 @@
 import { cn } from '@/lib/utils';
 import * as AvatarPrimitive from '@rn-primitives/avatar';
 
+import { Text } from '@/components/ui/text';
+
 function Avatar({
   className,
   ...props
@@ -22,6 +24,7 @@ function AvatarImage({
 
 function AvatarFallback({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
   return (
@@ -31,7 +34,13 @@ function AvatarFallback({
         className
       )}
       {...props}
-    />
+    >
+      {typeof children === 'string' ? (
+        <Text className="text-xs font-semibold text-muted-foreground uppercase">{children}</Text>
+      ) : (
+        children
+      )}
+    </AvatarPrimitive.Fallback>
   );
 }
 

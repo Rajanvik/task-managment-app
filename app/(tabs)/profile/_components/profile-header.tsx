@@ -11,7 +11,9 @@ export function ProfileHeader() {
       
       <Avatar alt="User profile" className="h-28 w-28 border-4 border-background rounded-full shadow-2xl z-10">
         <AvatarImage source={require('@/assets/images/rajan.png')} />
-        <AvatarFallback>RK</AvatarFallback>
+        <AvatarFallback>
+          <Text className="text-sm font-black text-muted-foreground uppercase">RK</Text>
+        </AvatarFallback>
       </Avatar>
       <Text className="mt-4 text-3xl font-extrabold tracking-tight text-foreground z-10">Rajan Kumar</Text>
       <Text className="text-muted-foreground font-medium z-10">rajankumar15052002@gmail.com</Text>

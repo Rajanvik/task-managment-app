@@ -16,12 +16,6 @@ interface TaskContextType {
   updateTask: (id: string, updatedData: Partial<Task>) => void;
   toggleStatus: (id: string) => void;
   toggleSubTask: (taskId: string, subTaskId: string) => void;
-  
-  // Dynamic Form Steps State and Helpers for TaskForm
-  formSteps: SubTask[];
-  initFormSteps: (steps?: SubTask[]) => void;
-  addFormStep: (title: string) => void;
-  removeFormStep: (id: string) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -64,29 +58,6 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     }
     saveTasks();
   }, [tasks, isLoaded]);
-  
-  // Temporary Form Steps State
-  const [formSteps, setFormSteps] = useState<SubTask[]>([]);
-
-  const initFormSteps = (steps?: SubTask[]) => {
-    setFormSteps(steps || []);
-  };
-
-  const addFormStep = (title: string) => {
-    if (!title.trim()) return;
-    setFormSteps((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        title: title.trim(),
-        completed: false,
-      },
-    ]);
-  };
-
-  const removeFormStep = (id: string) => {
-    setFormSteps((prev) => prev.filter((s) => s.id !== id));
-  };
 
   const addTask = (newTaskData: {
     title: string;
@@ -171,10 +142,6 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         updateTask,
         toggleStatus,
         toggleSubTask,
-        formSteps,
-        initFormSteps,
-        addFormStep,
-        removeFormStep,
       }}
     >
       {children}

@@ -32,19 +32,27 @@ export default function TasksScreen() {
   // Dynamic Category Filters
   const [filter, setFilter] = useState<'All' | 'Work' | 'Personal' | 'Urgent'>('All');
 
-  const selectedTask = tasks.find((t: Task) => t.id === selectedTaskId) || null;
+  const selectedTask = React.useMemo(() => {
+    return tasks.find((t: Task) => t.id === selectedTaskId) || null;
+  }, [tasks, selectedTaskId]);
 
-  // Filter Tasks dynamically
-  const filteredTasks = tasks.filter((t: Task) => {
-    if (filter === 'All') return true;
-    return t.category === filter;
-  });
-
-  // Calculate Tasks completion progress variables
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((t: Task) => t.status === "Completed").length;
-  const pendingTasks = tasks.filter((t: Task) => t.status === "Pending").length;
-  const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const { filteredTasks, totalTasks, completedTasks, pendingTasks, progressPercentage } = React.useMemo(() => {
+    const filtered = tasks.filter((t: Task) => {
+      if (filter === 'All') return true;
+      return t.category === filter;
+    });
+    const total = tasks.length;
+    const completed = tasks.filter((t: Task) => t.status === "Completed").length;
+    const pending = tasks.filter((t: Task) => t.status === "Pending").length;
+    const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+    return {
+      filteredTasks: filtered,
+      totalTasks: total,
+      completedTasks: completed,
+      pendingTasks: pending,
+      progressPercentage: progress,
+    };
+  }, [tasks, filter]);
 
   return (
     <View className="flex-1 bg-background">

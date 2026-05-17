@@ -90,12 +90,12 @@ export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
   // Dynamic local date picker hook, backed by timezone-safe parsers
   const [dueDate, setDueDate] = useState<Date>(parseLocalDate(initialData?.dueDate));
 
-  // 2. Retrieve global subtask checklist state & modifiers from TaskContext
-  const { formSteps, initFormSteps, addFormStep, removeFormStep } = useTasks();
+  // 2. Local state for draft subtask checklist
+  const [formSteps, setFormSteps] = useState<SubTask[]>(initialData?.steps || []);
 
   // 3. Sync draft steps & selected due date on initialData mount / changes
   useEffect(() => {
-    initFormSteps(initialData?.steps || []);
+    setFormSteps(initialData?.steps || []);
   }, [initialData]);
 
   useEffect(() => {
@@ -134,7 +134,14 @@ export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
 
   const handleAddNewStep = () => {
     if (!newStepText.trim()) return;
-    addFormStep(newStepText.trim());
+    setFormSteps((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        title: newStepText.trim(),
+        completed: false,
+      },
+    ]);
     setNewStepText('');
   };
 
@@ -287,7 +294,7 @@ export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onPress={() => removeFormStep(step.id)}
+                    onPress={() => setFormSteps((prev) => prev.filter((s) => s.id !== step.id))}
                     className="h-6 w-6 rounded-full bg-destructive/10 active:bg-destructive/20 border border-destructive/10 items-center justify-center"
                   >
                     <X size={11} color="#ef4444" />

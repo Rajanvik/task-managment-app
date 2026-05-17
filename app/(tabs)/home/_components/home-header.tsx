@@ -24,7 +24,9 @@ export function HomeHeader() {
           className="h-12 w-12 border-2 border-background shadow-lg"
         >
           <AvatarImage source={require('@/assets/images/rajan.png')} />
-          <AvatarFallback>RK</AvatarFallback>
+          <AvatarFallback>
+            <Text className="text-xs font-black text-muted-foreground uppercase">RK</Text>
+          </AvatarFallback>
         </Avatar>
       </View>
 
