@@ -1,5 +1,14 @@
-import { Redirect } from 'expo-router';
+import React, { useEffect } from 'react';
+import { useRouter } from 'expo-router';
+import { View } from 'react-native';
 
 export default function Index() {
-  return <Redirect href="/home" />;
+  const router = useRouter();
+
+  useEffect(() => {
+    // Perform redirection asynchronously after the root layout is cleanly mounted
+    router.replace('/home');
+  }, [router]);
+
+  return <View className="flex-1 bg-background" />;
 }

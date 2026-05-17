@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { View, LogBox } from 'react-native';
 import { PortalHost } from '@rn-primitives/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,6 +16,11 @@ import { TaskProvider } from '@/context/TaskContext';
 import { Toaster } from '@/components/ui/toaster';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+
+// Ignore generic third-party Expo SDK push notification library notice on Expo Go
+LogBox.ignoreLogs([
+  'expo-notifications: Android Push notifications',
+]);
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync().catch(() => {});
