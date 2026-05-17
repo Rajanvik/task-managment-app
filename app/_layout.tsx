@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -16,7 +17,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -27,7 +28,30 @@ export default function RootLayout() {
 
   useEffect(() => {
     // Hide the splash screen after the component mounts
-    SplashScreen.hideAsync();
+    let isMounted = true;
+    
+    const hideSplash = async () => {
+      try {
+        await SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn("Error hiding splash screen:", e);
+      }
+    };
+
+    // Hide immediately on mount
+    hideSplash();
+
+    // Safety fallback: ensure splash hides even if mounting gets delayed or interrupted
+    const fallbackTimer = setTimeout(() => {
+      if (isMounted) {
+        hideSplash();
+      }
+    }, 500);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   return (
