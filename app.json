@@ -37,7 +37,8 @@
         {
           "android": {
             "enableProguardInReleaseBuilds": false,
-            "enableShrinkResourcesInReleaseBuilds": false
+            "enableShrinkResourcesInReleaseBuilds": false,
+            "enableMinifyInReleaseBuilds": false
           }
         }
       ],
@@ -68,7 +69,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e4d712e6-9a35-447f-b212-64275e356495"
+        "projectId": "40f511b9-83d9-479f-a418-48a2423429fa"
       }
     }
   }
