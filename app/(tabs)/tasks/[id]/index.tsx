@@ -9,6 +9,67 @@ import { ChevronLeft, CheckCircle2, Calendar, CheckSquare, FileText } from 'luci
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { THEME } from '@/lib/theme';
 import { useTasks } from '@/context/TaskContext';
+import { toast } from '@/lib/toast';
+import type { SubTask } from '@/app/(tabs)/tasks/data/task-data';
+
+interface SubTaskItemProps {
+  step: SubTask;
+  taskId: string;
+  toggleSubTask: (taskId: string, subTaskId: string) => void;
+}
+
+function SubTaskItem({ step, taskId, toggleSubTask }: SubTaskItemProps) {
+  const router = useRouter();
+  const [localCompleted, setLocalCompleted] = React.useState(step.completed);
+
+  React.useEffect(() => {
+    setLocalCompleted(step.completed);
+  }, [step.completed]);
+
+  const handlePress = () => {
+    const nextCompleted = !localCompleted;
+    
+    // 1. Instantly tick locally in the current frame
+    setLocalCompleted(nextCompleted);
+
+    // 2. Schedule the navigation push in the very next animation paint frame.
+    // This allows the step tick to render instantly with zero lag,
+    // and then launches the transition with zero stutters!
+    requestAnimationFrame(() => {
+      router.push({
+        pathname: '/celebration',
+        params: {
+          title: nextCompleted ? 'Step Completed! 🎉' : 'Step Reactivated ⚙️',
+          description: nextCompleted
+            ? `Awesome! You completed the step: "${step.title}".`
+            : `Step: "${step.title}" is now active again.`,
+          type: nextCompleted ? 'complete' : 'add'
+        }
+      });
+    });
+
+    // 3. Defer store modifications until the slide animation is fully complete (600ms)
+    setTimeout(() => {
+      toggleSubTask(taskId, step.id);
+    }, 600);
+  };
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      className="flex-row items-center gap-3 active:opacity-75 py-1"
+    >
+      {localCompleted ? (
+        <CheckCircle2 size={20} color="#10b981" />
+      ) : (
+        <View className="h-5 w-5 rounded-full border-2 border-muted-foreground/30" />
+      )}
+      <Text className={`text-base ${localCompleted ? 'text-muted-foreground line-through decoration-muted-foreground/50' : 'text-foreground'}`}>
+        {step.title}
+      </Text>
+    </Pressable>
+  );
+}
 
 export default function TaskDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -140,25 +201,14 @@ export default function TaskDetailsScreen() {
               </View>
 
               <View className="gap-3.5">
-                {steps.map((step) => {
-                  const isStepCompleted = step.completed;
-                  return (
-                    <Pressable
-                      key={step.id}
-                      onPress={() => toggleSubTask(task.id, step.id)}
-                      className="flex-row items-center gap-3 active:opacity-75 py-1"
-                    >
-                      {isStepCompleted ? (
-                        <CheckCircle2 size={20} color="#10b981" />
-                      ) : (
-                        <View className="h-5 w-5 rounded-full border-2 border-muted-foreground/30" />
-                      )}
-                      <Text className={`text-base ${isStepCompleted ? 'text-muted-foreground line-through decoration-muted-foreground/50' : 'text-foreground'}`}>
-                        {step.title}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+                {steps.map((step) => (
+                  <SubTaskItem
+                    key={step.id}
+                    step={step}
+                    taskId={task.id}
+                    toggleSubTask={toggleSubTask}
+                  />
+                ))}
               </View>
             </View>
           )}
@@ -166,7 +216,28 @@ export default function TaskDetailsScreen() {
           {/* DYNAMIC ACTIONS */}
           <View className="pb-16 gap-4">
             <Button 
-              onPress={() => toggleStatus(task.id)}
+              onPress={() => {
+                const nextStatus = task.status === 'Completed' ? 'Pending' : 'Completed';
+                
+                // 1. Instantly navigate to celebration modal in the next paint frame
+                requestAnimationFrame(() => {
+                  router.push({
+                    pathname: '/celebration',
+                    params: {
+                      title: nextStatus === 'Completed' ? 'Victory! Task Completed 🥳' : 'Task Re-opened 🎯',
+                      description: nextStatus === 'Completed'
+                        ? `Fantastic job! You have successfully finished "${task.title}". Keep up the superb momentum!`
+                        : `"${task.title}" has been set back to active. Let's conquer it again!`,
+                      type: nextStatus === 'Completed' ? 'complete' : 'add'
+                    }
+                  });
+                });
+                
+                // 2. Process database state alterations after the transition is fully complete (600ms)
+                setTimeout(() => {
+                  toggleStatus(task.id);
+                }, 600);
+              }}
               className={`h-14 rounded-2xl flex-row gap-2.5 shadow-xl ${isCompleted ? 'bg-secondary border border-border/30 shadow-black/5' : 'bg-primary shadow-primary/20'}`}
             >
               <CheckCircle2 size={20} color={isCompleted ? theme.foreground : theme.primaryForeground} />

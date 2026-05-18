@@ -71,7 +71,27 @@ function RootLayoutContent() {
     <ThemeProvider value={colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light}>
       <View className={colorScheme === 'dark' ? 'dark flex-1 bg-background' : 'flex-1 bg-background'}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="index" 
+            options={{ 
+              headerShown: false, 
+              animation: 'fade' 
+            }} 
+          />
+          <Stack.Screen 
+            name="(tabs)" 
+            options={{ 
+              headerShown: false, 
+              animation: 'fade' 
+            }} 
+          />
+          <Stack.Screen 
+            name="celebration" 
+            options={{ 
+              headerShown: false, 
+              animation: 'slide_from_bottom',
+            }} 
+          />
         </Stack>
         <PortalHost />
         <Toaster richColors closeButton />

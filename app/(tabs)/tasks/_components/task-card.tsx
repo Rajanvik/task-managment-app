@@ -26,6 +26,26 @@ export function TaskCard({
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme];
 
+  // Local state for instantaneous visual feedback when tapping the checkbox (0ms delay)
+  const [localCompleted, setLocalCompleted] = React.useState(task.status === "Completed");
+
+  // Keep local status state synchronized with structural prop updates
+  React.useEffect(() => {
+    setLocalCompleted(task.status === "Completed");
+  }, [task.status]);
+
+  const handleToggle = () => {
+    // 1. Instantly update the check icon visually in the exact same frame (0ms UI lag!)
+    setLocalCompleted(!localCompleted);
+    
+    // 2. Schedule the navigation push in the very next animation paint frame.
+    // This allows the check icon to render with 100% thread priority instantly,
+    // and then launches the transition with zero collision stutters!
+    requestAnimationFrame(() => {
+      onToggle();
+    });
+  };
+
   // Calculate dynamic subtask steps progress
   const hasSteps = task.steps && task.steps.length > 0;
   const completedSteps = hasSteps ? task.steps!.filter((s) => s.completed).length : 0;
@@ -38,18 +58,15 @@ export function TaskCard({
         Clicking the card itself now remains static and doesn't take the user to details.
       */}
       <Card
-        className={cn(
-          "border border-border/40 rounded-3xl px-3.5 pt-3.5 pb-2.5 shadow-sm", // Reduced bottom padding to pb-2.5 for ultimate tightness
-          task.status === "Completed" ? "bg-secondary/10 border-transparent shadow-none" : "bg-card shadow-black/5"
-        )}
+        className="bg-card border border-border/40 rounded-3xl px-3.5 pt-3.5 pb-2.5 shadow-sm shadow-black/5"
       >
         {/* Top Main Section with Tightened Row Spacing */}
         <View className="flex-row items-start justify-between">
           <View className="flex-row items-start flex-1 gap-2.5">
             
-            {/* Task Completion Checkbox */}
-            <Pressable onPress={onToggle} className="p-0.5 mt-0.5">
-              {task.status === "Completed" ? (
+            {/* Task Completion Checkbox (Instant local tick feedback) */}
+            <Pressable onPress={handleToggle} className="p-0.5 mt-0.5">
+              {localCompleted ? (
                 <CheckCircle2 size={21} color={theme.primary} />
               ) : (
                 <Circle size={21} color="gray" />
@@ -61,7 +78,7 @@ export function TaskCard({
               <Text
                 className={cn(
                   "text-[17px] font-extrabold leading-tight",
-                  task.status === "Completed" ? "text-muted-foreground line-through opacity-60" : "text-foreground"
+                  localCompleted ? "text-muted-foreground line-through opacity-60" : "text-foreground"
                 )}
               >
                 {task.title}
@@ -72,7 +89,7 @@ export function TaskCard({
                   numberOfLines={1}
                   className={cn(
                     "text-xs mt-0.5",
-                    task.status === "Completed" ? "text-muted-foreground/60" : "text-muted-foreground"
+                    localCompleted ? "text-muted-foreground/60" : "text-muted-foreground"
                   )}
                 >
                   {task.description}

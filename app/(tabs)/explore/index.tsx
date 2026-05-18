@@ -3,6 +3,7 @@ import { View, ScrollView } from 'react-native';
 import { ExploreHeader } from './_components/explore-header';
 import { FeatureCard } from './_components/feature-card';
 import { GetStartedCard } from './_components/get-started-card';
+import { AnimatedReveal } from '@/components/ui/animated-reveal';
 
 const EXPLORE_FEATURES = [
   {
@@ -33,20 +34,30 @@ export default function ExploreScreen() {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* HEADER WITH BACKGROUND DECORATION */}
-        <ExploreHeader />
+        <AnimatedReveal variant="slide-down" delay={50} duration={400}>
+          <ExploreHeader />
+        </AnimatedReveal>
 
         <View className="px-5 py-8 rounded-t-[48px] bg-background -mt-10 flex-1 min-h-[800px]">
           <View className="gap-5">
-            {EXPLORE_FEATURES.map((feature) => (
-              <FeatureCard 
+            {EXPLORE_FEATURES.map((feature, index) => (
+              <AnimatedReveal 
                 key={feature.id} 
-                title={feature.title} 
-                description={feature.description} 
-                icon={feature.icon} 
-              />
+                variant="slide-up" 
+                delay={150 + index * 100} 
+                duration={500}
+              >
+                <FeatureCard 
+                  title={feature.title} 
+                  description={feature.description} 
+                  icon={feature.icon} 
+                />
+              </AnimatedReveal>
             ))}
             
-            <GetStartedCard />
+            <AnimatedReveal variant="scale" delay={150 + EXPLORE_FEATURES.length * 100} duration={500}>
+              <GetStartedCard />
+            </AnimatedReveal>
           </View>
         </View>
         <View className="h-12" />

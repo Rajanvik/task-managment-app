@@ -5,6 +5,7 @@ import { Text } from '@/components/ui/text';
 import { ProfileHeader } from './_components/profile-header';
 import { PreferencesCard } from './_components/preferences-card';
 import { AccountCard } from './_components/account-card';
+import { AnimatedReveal } from '@/components/ui/animated-reveal';
 
 export default function ProfileScreen() {
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
@@ -16,20 +17,28 @@ export default function ProfileScreen() {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* HEADER WITH PROFILE INFO */}
-        <ProfileHeader />
+        <AnimatedReveal variant="slide-down" delay={50} duration={400}>
+          <ProfileHeader />
+        </AnimatedReveal>
 
         <View className="px-5 py-8 rounded-t-[48px] bg-background -mt-10 flex-1 min-h-[800px]">
           <View className="gap-4">
             {/* Preferences Section */}
-            <PreferencesCard />
+            <AnimatedReveal variant="slide-up" delay={150} duration={500}>
+              <PreferencesCard />
+            </AnimatedReveal>
 
             {/* Account Section */}
-            <AccountCard />
+            <AnimatedReveal variant="slide-up" delay={300} duration={500}>
+              <AccountCard />
+            </AnimatedReveal>
           </View>
 
-          <Text className="text-center py-10 text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
-            Version {appVersion} Stable
-          </Text>
+          <AnimatedReveal variant="fade" delay={450} duration={400}>
+            <Text className="text-center py-10 text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
+              Version {appVersion} Stable
+            </Text>
+          </AnimatedReveal>
         </View>
       </ScrollView>
     </View>

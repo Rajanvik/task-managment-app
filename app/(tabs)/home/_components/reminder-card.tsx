@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { View, Pressable } from "react-native";
-import { Bell, BellOff, Sparkles, Clock, CheckCircle2 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import {
+  Bell,
+  Clock,
+  CheckCircle2,
+} from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
 
 import { Card } from "@/components/ui/card";
-import { Text } from "@/components/ui/text";
 import { Switch } from "@/components/ui/switch";
+import { Text } from "@/components/ui/text";
 import { useTasks } from "@/context/TaskContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { THEME } from "@/lib/theme";
-import { toast } from "@/lib/toast";
 import {
-  triggerImmediateReminder,
-  scheduleDailyPendingReminder,
   cancelAllReminders,
   registerForNotificationsAsync,
+  scheduleDailyPendingReminder,
+  triggerImmediateReminder,
 } from "@/lib/notifications";
+import { THEME } from "@/lib/theme";
+import type { Task } from "@/app/(tabs)/tasks/data/task-data";
+import { toast } from "@/lib/toast";
 
 export function ReminderCard() {
   const { colorScheme } = useColorScheme();
@@ -25,9 +30,9 @@ export function ReminderCard() {
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const pendingTasks = tasks.filter((t) => t.status === "Pending");
+  const pendingTasks = tasks.filter((t: Task) => t.status === "Pending");
   const pendingCount = pendingTasks.length;
-  const pendingTitles = pendingTasks.map((t) => t.title);
+  const pendingTitles = pendingTasks.map((t: Task) => t.title);
 
   // Initialize permissions check
   useEffect(() => {
@@ -65,7 +70,7 @@ export function ReminderCard() {
         9, // 9:00 AM
         0,
         pendingCount,
-        pendingTitles
+        pendingTitles,
       );
 
       if (scheduled) {
@@ -96,13 +101,13 @@ export function ReminderCard() {
         {/* Header Section */}
         <View className="flex-row items-center gap-3 mb-4">
           <View className="h-10 w-10 bg-primary/10 rounded-2xl items-center justify-center">
-            <Bell size={20} color={theme.primary} />
+            <Bell size={21} color={theme.primary} />
           </View>
           <View className="flex-1">
             <Text className="text-[10px] font-bold text-primary uppercase tracking-widest">
               Smart Assistant
             </Text>
-            <Text className="text-lg font-bold text-foreground mt-0.5">
+            <Text className="text-lg font-bold text-foreground -mt-0.5">
               Pending Task Reminders
             </Text>
           </View>
@@ -111,7 +116,9 @@ export function ReminderCard() {
         {/* Status / Pending Summary */}
         <View className="bg-secondary/40 border border-border/10 rounded-2xl p-4 mb-5 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
-            <View className={`h-2.5 w-2.5 rounded-full ${pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"}`} />
+            <View
+              className={`h-2.5 w-2.5 rounded-full ${pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"}`}
+            />
             <View>
               <Text className="text-xs font-semibold text-foreground">
                 {pendingCount > 0
