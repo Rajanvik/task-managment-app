@@ -1,88 +1,403 @@
-import React from 'react';
-import { View, Pressable } from 'react-native';
+import React, { useEffect, useCallback } from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { THEME } from '@/lib/theme';
 import { Text } from '@/components/ui/text';
 import Animated, { 
-  FadeIn, 
-  FadeOut, 
-  LinearTransition 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSpring
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 export const TABS = [
-  { name: 'home/index', label: 'Home', icon: 'house.fill' },
-  { name: 'tasks', label: 'Tasks', icon: 'list.bullet' },
-  { name: 'explore/index', label: 'Explore', icon: 'paperplane.fill' },
-  { name: 'profile/index', label: 'Profile', icon: 'person.fill' },
-];
+  { name: 'analytics/index', label: 'Stats',   icon: 'chart.bar.fill'  },
+  { name: 'tasks',           label: 'Tasks',   icon: 'list.bullet'     },
+  { name: 'home/index',      label: 'Home',    icon: 'house.fill'      },
+  { name: 'explore/index',   label: 'Explore', icon: 'paperplane.fill' },
+  { name: 'profile/index',   label: 'Profile', icon: 'person.fill'     },
+] as const;
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+// Fast O(1) tab configuration lookup
+const TAB_MAP = TABS.reduce((acc, tab) => {
+  acc[tab.name] = tab;
+  return acc;
+}, {} as Record<string, typeof TABS[number]>);
+
+// ─── Constants ────────────────────────────────────────────────────────────
+const CENTER_IDX    = 2;
+const BAR_H         = 75;
+const CIRCLE_D      = 58;
+const RING_W        = 8;
+const SHELL_H       = BAR_H + CIRCLE_D / 2 + RING_W + 2;
+const OUTER_D       = CIRCLE_D + RING_W * 2;
+// Snug vertical offset for central floating Home button
+const CIRCLE_BOTTOM = BAR_H - OUTER_D / 2 - 4;
+
+// Active indicator capsule size constants
+const SLIDER_W = 56;
+const SLIDER_H = 28;
+
+interface TabActiveBgProps {
+  focused: boolean;
+  colorScheme: 'light' | 'dark';
+}
+
+/**
+ * High-Performance Local Active Background Capsule Component
+ * Renders a gorgeous local fade-in and scale spring transition.
+ * Eliminates screen-wide sliding lag/distraction, centering 100% perfectly.
+ */
+const TabActiveBg = React.memo(({ focused, colorScheme }: TabActiveBgProps) => {
+  const opacity = useSharedValue(focused ? 1 : 0);
+  const scale = useSharedValue(focused ? 1 : 0.92);
+
+  useEffect(() => {
+    opacity.value = withSpring(focused ? 1 : 0, { damping: 15, stiffness: 150 });
+    scale.value = withSpring(focused ? 1 : 0.92, { damping: 15, stiffness: 150 });
+  }, [focused]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        styles.activeBg,
+        {
+          backgroundColor: colorScheme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+        },
+        animatedStyle,
+      ]}
+    />
+  );
+});
+
+interface TabIconProps {
+  focused: boolean;
+  icon: string;
+  theme: any;
+}
+
+/**
+ * Standard Tab Icon Component
+ * Lightweight pure component rendering IconSymbol directly.
+ */
+const TabIcon = React.memo(({ focused, icon, theme }: TabIconProps) => (
+  <IconSymbol
+    size={20}
+    name={icon as any}
+    color={focused ? theme.foreground : theme.mutedForeground}
+  />
+));
+
+interface TabLabelProps {
+  focused: boolean;
+  label: string;
+  theme: any;
+}
+
+/**
+ * Standard Tab Label Component
+ * High-performance lightweight memoized text wrapper.
+ */
+const TabLabel = React.memo(({ focused, label, theme }: TabLabelProps) => (
+  <Text
+    style={[
+      styles.tabLabel,
+      {
+        fontWeight: focused ? '700' : '500',
+        color: focused ? theme.foreground : theme.mutedForeground,
+      }
+    ]}
+  >
+    {label}
+  </Text>
+));
+
+interface CenterTabBarButtonProps {
+  route: any;
+  focused: boolean;
+  tabInfo: typeof TABS[number];
+  theme: any;
+  onPress: (routeName: string, routeKey: string, focused: boolean) => void;
+}
+
+/**
+ * Animated Central Floating Button Component
+ * Supports custom spring scales, touch/press haptic responses, and dynamic active scaling.
+ * Completely shadowless flat design.
+ */
+const CenterTabBarButton = React.memo(({ route, focused, tabInfo, theme, onPress }: CenterTabBarButtonProps) => {
+  const activeProgress = useSharedValue(focused ? 1 : 0);
+  const pressScale = useSharedValue(1);
+
+  useEffect(() => {
+    activeProgress.value = withSpring(focused ? 1 : 0, {
+      damping: 14,
+      stiffness: 110,
+    });
+  }, [focused]);
+
+  // Spring animations for focused scaling and press interactions
+  const animatedStyle = useAnimatedStyle(() => {
+    const baseScale = 1 + activeProgress.value * 0.08;
+    return {
+      transform: [
+        { scale: pressScale.value * baseScale },
+      ],
+      backgroundColor: theme.secondary,
+    };
+  });
+
+  const handlePressIn = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    pressScale.value = withSpring(0.9, { damping: 8, stiffness: 350 });
+  }, []);
+
+  const handlePressOut = useCallback(() => {
+    pressScale.value = withSpring(1, { damping: 8, stiffness: 350 });
+  }, []);
+
+  const handlePress = useCallback(() => {
+    onPress(route.name, route.key, focused);
+  }, [onPress, route.name, route.key, focused]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={styles.centerPressable}
+    >
+      <Animated.View
+        style={[
+          styles.centerAnimatedView,
+          animatedStyle,
+        ]}
+      >
+        <IconSymbol
+          size={24}
+          name={tabInfo.icon as any}
+          color={theme.foreground}
+        />
+        <Text
+          style={[
+            styles.centerText,
+            { color: theme.foreground }
+          ]}
+        >
+          {tabInfo.label}
+        </Text>
+      </Animated.View>
+    </Pressable>
+  );
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.focused === nextProps.focused &&
+    prevProps.theme === nextProps.theme &&
+    prevProps.route.key === nextProps.route.key &&
+    prevProps.onPress === nextProps.onPress
+  );
+});
+
+interface TabItemProps {
+  route: any;
+  focused: boolean;
+  tabInfo: typeof TABS[number];
+  theme: any;
+  colorScheme: 'light' | 'dark';
+  onPress: (routeName: string, routeKey: string, focused: boolean) => void;
+}
+
+/**
+ * Optimized individual standard Tab item wrapper.
+ * Using strict React.memo comparison to bypass render work when focus stays unchanged.
+ */
+const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPress }: TabItemProps) => {
+  const handlePress = useCallback(() => {
+    onPress(route.name, route.key, focused);
+  }, [onPress, route.name, route.key, focused]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      className="flex-1 items-center justify-center z-20"
+      style={styles.tabPressable}
+    >
+      <View className="items-center justify-center">
+        {/* Local Fade Active Indicator Capsule Background */}
+        <TabActiveBg 
+          focused={focused} 
+          colorScheme={colorScheme} 
+        />
+
+        {/* Icon wrapper */}
+        <View 
+          className="items-center justify-center" 
+          style={styles.iconWrapper}
+        >
+          <TabIcon
+            focused={focused}
+            icon={tabInfo.icon}
+            theme={theme}
+          />
+        </View>
+
+        {/* Label text */}
+        <TabLabel
+          focused={focused}
+          label={tabInfo.label}
+          theme={theme}
+        />
+      </View>
+    </Pressable>
+  );
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.focused === nextProps.focused &&
+    prevProps.theme === nextProps.theme &&
+    prevProps.colorScheme === nextProps.colorScheme &&
+    prevProps.route.key === nextProps.route.key &&
+    prevProps.onPress === nextProps.onPress
+  );
+});
 
 export function CustomTabBar({ state, descriptors, navigation }: any) {
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme];
 
+  const doNav = useCallback((routeName: string, routeKey: string, focused: boolean) => {
+    const ev = navigation.emit({ type: 'tabPress', target: routeKey, canPreventDefault: true });
+    if (!focused && !ev.defaultPrevented) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      navigation.navigate(routeName);
+    }
+  }, [navigation]);
+
+  const cRoute   = state.routes[CENTER_IDX];
+  const cTab     = TABS[CENTER_IDX];
+  const cFocused = state.index === CENTER_IDX;
+
   return (
-    <View 
-      className="absolute bottom-6 left-5 right-5 h-16 bg-secondary/80 dark:bg-muted/80 border border-border/40 rounded-[32px] flex-row items-center justify-around px-2 shadow-2xl shadow-black/20"
-      style={{ 
-        backdropFilter: 'blur(10px)', // For web support if needed
-      }}
+    // SHELL — absolute, full width, explicit height, transparent bg, z-50
+    <View
+      pointerEvents="box-none"
+      className="absolute bottom-0 left-0 right-0 bg-transparent z-50"
+      style={{ height: SHELL_H }}
     >
-      {state.routes.map((route: any, index: number) => {
-        const isFocused = state.index === index;
-        const tabInfo = TABS.find(t => t.name === route.name);
-        if (!tabInfo) return null;
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
+      {/* ── FLOATING CIRCLE ─────────────────────────────────────────────── */}
+      <View
+        pointerEvents="box-none"
+        className="absolute left-0 right-0 items-center z-30"
+        style={{ bottom: CIRCLE_BOTTOM }}
+      >
+        {/* OUTER RING — bg-secondary, separation border, shadowless flat design */}
+        <View
+          className="bg-secondary items-center justify-center"
+          style={[
+            styles.outerCircle,
+            { borderColor: theme.background }
+          ]}
+        >
+          <CenterTabBarButton
+            route={cRoute}
+            focused={cFocused}
+            tabInfo={cTab}
+            theme={theme}
+            onPress={doNav}
+          />
+        </View>
+      </View>
 
-          if (!isFocused && !event.defaultPrevented) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            navigation.navigate(route.name);
+      {/* ── TAB BAR ─────────────────────────────────────────────────────── */}
+      <View
+        className="absolute bottom-0 left-0 right-0 flex-row bg-secondary border-t border-l border-r border-border z-10"
+        style={styles.tabContainer}
+      >
+        {state.routes.map((route: any, index: number) => {
+          const focused = state.index === index;
+          const tabInfo = TAB_MAP[route.name];
+          if (!tabInfo) return null;
+
+          // Empty center slot
+          if (index === CENTER_IDX) {
+            return <View key={index} className="flex-1" />;
           }
-        };
 
-        return (
-          <AnimatedPressable
-            key={index}
-            onPress={onPress}
-            layout={LinearTransition.springify().damping(20).stiffness(150)}
-            className="items-center justify-center"
-          >
-            <Animated.View 
-              layout={LinearTransition.springify().damping(20).stiffness(150)}
-              className={`flex-row items-center gap-2 py-2.5 px-5 overflow-hidden ${isFocused ? 'bg-primary' : 'bg-transparent'}`}
-              style={{ borderRadius: 100 }}
-            >
-              <IconSymbol 
-                size={20} 
-                name={tabInfo.icon as any} 
-                color={isFocused ? theme.background : theme.mutedForeground} 
-              />
-              {isFocused && (
-                <Animated.View
-                  entering={FadeIn.duration(200)}
-                  exiting={FadeOut.duration(200)}
-                >
-                  <Text 
-                    className="text-sm font-bold tracking-tight"
-                    style={{ color: theme.background }}
-                  >
-                    {tabInfo.label}
-                  </Text>
-                </Animated.View>
-              )}
-            </Animated.View>
-          </AnimatedPressable>
-        );
-      })}
+          return (
+            <TabItem
+              key={route.key}
+              route={route}
+              focused={focused}
+              tabInfo={tabInfo}
+              theme={theme}
+              colorScheme={colorScheme}
+              onPress={doNav}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  activeBg: {
+    position: 'absolute',
+    width: SLIDER_W,
+    height: SLIDER_H,
+    borderRadius: SLIDER_H / 2,
+    top: 0,
+    zIndex: -1,
+  },
+  iconWrapper: {
+    width: SLIDER_W,
+    height: SLIDER_H,
+  },
+  tabLabel: {
+    fontSize: 10,
+    letterSpacing: 0.2,
+    marginTop: 2, // Snug vertical spacing for premium look
+  },
+  centerPressable: {
+    width: CIRCLE_D,
+    height: CIRCLE_D,
+    borderRadius: CIRCLE_D / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerAnimatedView: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: CIRCLE_D / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerText: {
+    fontSize: 9,
+    fontWeight: '700',
+    marginTop: 1,
+    letterSpacing: 0.3,
+  },
+  tabPressable: {
+    height: BAR_H,
+  },
+  outerCircle: {
+    width:        OUTER_D,
+    height:       OUTER_D,
+    borderRadius: OUTER_D / 2,
+    borderWidth:  RING_W,
+  },
+  tabContainer: {
+    height: BAR_H,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    alignItems: 'center',
+  }
+});

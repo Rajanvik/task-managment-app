@@ -19,34 +19,37 @@ export function ProgressCard({ completedTasks, progressPercentage }: ProgressCar
   const isFinished = progressPercentage === 100;
 
   return (
-    <Card className="mb-3 bg-card border border-border/10 shadow-lg rounded-[24px] overflow-hidden">
+    <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl overflow-hidden">
       {/* Compact Decorative Background Accents */}
       <View className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-6 -mt-6" />
       <View className={`absolute -bottom-8 -left-8 w-16 h-16 ${isFinished ? 'bg-amber-500/5' : 'bg-green-500/5'} rounded-full`} />
 
-      <View className="px-4 py-2.5">
-        {/* Compact Header with Ultra-low Top Margin & Padding */}
-        <View className="flex-row items-center gap-1.5 mb-2">
-          <View className={`h-8 w-8 ${isFinished ? 'bg-amber-500/10' : 'bg-green-500/10'} rounded-xl items-center justify-center`}>
-            {isFinished ? (
-              <Trophy size={15} color="amber" />
-            ) : (
-              <Target size={15} color="green" />
-            )}
+      <View className="p-5">
+        {/* Header section */}
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center gap-3">
+            <View className={`h-10 w-10 ${isFinished ? 'bg-amber-500/10' : 'bg-green-500/10'} rounded-2xl items-center justify-center`}>
+              {isFinished ? (
+                <Trophy size={21} color="#f59e0b" />
+              ) : (
+                <Target size={21} color="#22c55e" />
+              )}
+            </View>
+            <View className="justify-center">
+              <Text className={`text-[10px] font-black ${isFinished ? 'text-amber-500' : 'text-green-600'} uppercase tracking-widest leading-3`}>
+                Productivity
+              </Text>
+              <Text className="text-lg font-black text-foreground mt-0.5 leading-5 tracking-tight">
+                Weekly Goals
+              </Text>
+            </View>
           </View>
-          <View className="flex-1">
-            <Text className={`text-[8px] font-extrabold ${isFinished ? 'text-amber-500' : 'text-green-600'} uppercase tracking-widest`}>
-              Productivity
-            </Text>
-            <Text className="text-base font-extrabold text-foreground tracking-tight -mt-0.5">
-              Weekly Goals
-            </Text>
-          </View>
+
           <Badge
             variant="default"
-            className={`border-none px-2 py-0.5 rounded-full ${isFinished ? 'bg-amber-500/10' : 'bg-green-500/10'}`}
+            className={`border-none px-2.5 py-1 rounded-full ${isFinished ? 'bg-amber-500/10' : 'bg-green-500/10'}`}
           >
-            <Text className={`font-extrabold text-[8px] tracking-wider uppercase ${isFinished ? 'text-amber-600' : 'text-green-600'}`}>
+            <Text className={`font-black text-[9px] tracking-wider uppercase ${isFinished ? 'text-amber-600' : 'text-green-600'}`}>
               {isFinished ? "FINISHED" : "ON TRACK"}
             </Text>
           </Badge>

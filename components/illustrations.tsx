@@ -311,3 +311,79 @@ export function NoTasksIllustration({ width = 140, height = 120, hideBackgroundC
     </Svg>
   );
 }
+
+export function AnalyticsIllustration({ width = 140, height = 120, hideBackgroundCircle = false }: IllustrationProps) {
+  const { colorScheme } = useColorScheme();
+  const colors = getIllustrationColors(colorScheme);
+
+  return (
+    <Svg width={width} height={height} viewBox="0 0 140 120" fill="none">
+      <Defs>
+        <LinearGradient id="analyticsGrad" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0%" stopColor={colors.secondary} stopOpacity={0.6} />
+          <Stop offset="100%" stopColor={colors.primary} stopOpacity={0.4} />
+        </LinearGradient>
+        <LinearGradient id="spotlightGradAnalytics" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0%" stopColor={colors.accent} stopOpacity={0.3} />
+          <Stop offset="100%" stopColor={colors.accent} stopOpacity={0.0} />
+        </LinearGradient>
+        <LinearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+          <Stop offset="0%" stopColor={colors.primary} />
+          <Stop offset="100%" stopColor={colors.highlight} />
+        </LinearGradient>
+      </Defs>
+
+      {/* Background Spotlight */}
+      {!hideBackgroundCircle && <Circle cx="70" cy="60" r="50" fill="url(#spotlightGradAnalytics)" />}
+
+      <G transform="translate(70, 60) scale(0.85) translate(-70, -60)">
+        {/* Curved Floating Bar Chart Card in Back */}
+        <G transform="translate(30, 25) rotate(-8)">
+          <Rect x="0" y="0" width="70" height="80" rx="10" fill={colors.cardBg} stroke={colors.border} strokeWidth="1.5" />
+          {/* Grid lines */}
+          <Rect x="10" y="20" width="50" height="1" fill={colors.border} opacity={0.3} />
+          <Rect x="10" y="40" width="50" height="1" fill={colors.border} opacity={0.3} />
+          <Rect x="10" y="60" width="50" height="1" fill={colors.border} opacity={0.3} />
+          
+          {/* Bar Charts */}
+          <Rect x="15" y="45" width="8" height="25" rx="2" fill={colors.border} opacity={0.4} />
+          <Rect x="28" y="30" width="8" height="40" rx="2" fill={colors.border} opacity={0.6} />
+          <Rect x="41" y="50" width="8" height="20" rx="2" fill={colors.border} opacity={0.4} />
+        </G>
+
+        {/* Checked/floating Line Chart Card in Front */}
+        <G transform="translate(45, 30) rotate(5)">
+          <Rect x="0" y="0" width="75" height="85" rx="12" fill={colors.cardBg} stroke="url(#analyticsGrad)" strokeWidth="2" />
+          {/* Clip / Card Header */}
+          <Rect x="22" y="-6" width="30" height="12" rx="4" fill="url(#analyticsGrad)" />
+          
+          {/* Grid lines */}
+          <Rect x="8" y="22" width="59" height="1" fill={colors.border} opacity={0.3} />
+          <Rect x="8" y="42" width="59" height="1" fill={colors.border} opacity={0.3} />
+          <Rect x="8" y="62" width="59" height="1" fill={colors.border} opacity={0.3} />
+
+          {/* Line Chart Path */}
+          <Path d="M12 60 L28 35 L44 48 L62 20" stroke="url(#lineGrad)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          
+          {/* Neon Dots */}
+          <Circle cx="12" cy="60" r="3.5" fill={colors.cardBg} stroke={colors.primary} strokeWidth="2" />
+          <Circle cx="28" cy="35" r="3.5" fill={colors.cardBg} stroke={colors.primary} strokeWidth="2" />
+          <Circle cx="44" cy="48" r="3.5" fill={colors.cardBg} stroke={colors.primary} strokeWidth="2" />
+          <Circle cx="62" cy="20" r="4.5" fill={colors.cardBg} stroke={colors.highlight} strokeWidth="2.5" />
+
+          {/* Sparkles of premium analytics */}
+          <G transform="translate(8, 8)">
+            <Path d="M4 0 L5 2.5 L7.5 3 L5 3.5 L4 6 L3 3.5 L0.5 3 L3 2.5 Z" fill={colors.highlight} />
+          </G>
+          <G transform="translate(60, 50)">
+            <Path d="M3 0 L4 2 L6 2.5 L4 3 L3 5 L2 3 L0 2.5 L2 2 Z" fill={colors.highlight} />
+          </G>
+        </G>
+
+        {/* Small floating circles / bubble decorations */}
+        <Circle cx="20" cy="30" r="3.5" fill={colors.highlight} opacity="0.6" />
+        <Circle cx="15" cy="45" r="2" fill={colors.highlight} opacity="0.4" />
+      </G>
+    </Svg>
+  );
+}
