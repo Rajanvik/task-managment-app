@@ -12,7 +12,7 @@ export function ExploreHeader() {
           Explore
         </Text>
         <Text className="text-muted-foreground mt-0.5">
-          Discover the possibilities.
+          Discover features to optimize your productivity.
         </Text>
       </View>
     </View>

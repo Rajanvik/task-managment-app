@@ -8,21 +8,27 @@ import { AnimatedReveal } from '@/components/ui/animated-reveal';
 const EXPLORE_FEATURES = [
   {
     id: '1',
-    title: 'Modern Routing',
-    description: 'Navigate seamlessly between screens with file-based routing.',
-    icon: 'house.fill',
+    title: 'Smart Task Organization',
+    description: 'Organize your workflow using subtasks, color-coded categories, and flexible status tracking.',
+    icon: 'list.bullet',
   },
   {
     id: '2',
-    title: 'Cross-Platform',
-    description: 'One codebase for iOS, Android, and Web with native performance.',
-    icon: 'paperplane.fill',
+    title: 'Productivity Analytics',
+    description: 'Visualize your progress over time with completion rates and visual activity charts.',
+    icon: 'chart.bar.fill',
   },
   {
     id: '3',
-    title: 'Theme Aware',
-    description: 'Full support for light and dark modes out of the box.',
-    icon: 'list.bullet',
+    title: 'Interactive Dashboard',
+    description: 'Stay on top of your daily schedule with a real-time clock, quick task summaries, and status badges.',
+    icon: 'house.fill',
+  },
+  {
+    id: '4',
+    title: 'Seamless Personalization',
+    description: 'Customize your profile, configure preferences, and switch smoothly between dark and light modes.',
+    icon: 'person.fill',
   },
 ] as const;
 

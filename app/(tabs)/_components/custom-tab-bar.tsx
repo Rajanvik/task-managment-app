@@ -10,6 +10,7 @@ import Animated, {
   withSpring
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const TABS = [
   { name: 'analytics/index', label: 'Stats',   icon: 'chart.bar.fill'  },
@@ -270,7 +271,8 @@ const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPre
 
 export function CustomTabBar({ state, descriptors, navigation }: any) {
   const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const theme = THEME[colorScheme] || THEME.light;
+  const insets = useSafeAreaInsets();
 
   const doNav = useCallback((routeName: string, routeKey: string, focused: boolean) => {
     const ev = navigation.emit({ type: 'tabPress', target: routeKey, canPreventDefault: true });
@@ -289,14 +291,14 @@ export function CustomTabBar({ state, descriptors, navigation }: any) {
     <View
       pointerEvents="box-none"
       className="absolute bottom-0 left-0 right-0 bg-transparent z-50"
-      style={{ height: SHELL_H }}
+      style={{ height: SHELL_H + insets.bottom }}
     >
 
       {/* ── FLOATING CIRCLE ─────────────────────────────────────────────── */}
       <View
         pointerEvents="box-none"
         className="absolute left-0 right-0 items-center z-30"
-        style={{ bottom: CIRCLE_BOTTOM }}
+        style={{ bottom: CIRCLE_BOTTOM + insets.bottom }}
       >
         {/* OUTER RING — bg-secondary, separation border, shadowless flat design */}
         <View
@@ -319,7 +321,13 @@ export function CustomTabBar({ state, descriptors, navigation }: any) {
       {/* ── TAB BAR ─────────────────────────────────────────────────────── */}
       <View
         className="absolute bottom-0 left-0 right-0 flex-row bg-secondary border-t border-l border-r border-border z-10"
-        style={styles.tabContainer}
+        style={[
+          styles.tabContainer,
+          {
+            height: BAR_H + insets.bottom,
+            paddingBottom: insets.bottom,
+          }
+        ]}
       >
         {state.routes.map((route: any, index: number) => {
           const focused = state.index === index;
@@ -364,7 +372,7 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 10,
     letterSpacing: 0.2,
-    marginTop: 2, // Snug vertical spacing for premium look
+    marginTop: 2, 
   },
   centerPressable: {
     width: CIRCLE_D,
