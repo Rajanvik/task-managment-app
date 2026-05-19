@@ -88,7 +88,19 @@ export const useTaskStore = create<TaskStoreState>()((set, get) => ({
           }
           return step;
         });
-        return { ...t, steps: updatedSteps };
+
+        // Determine if all steps are now completed
+        const allCompleted = updatedSteps && updatedSteps.length > 0 && updatedSteps.every((step) => step.completed);
+
+        // Update task status accordingly
+        let nextStatus = t.status;
+        if (allCompleted) {
+          nextStatus = "Completed";
+        } else if (updatedSteps && updatedSteps.length > 0 && !allCompleted && t.status === "Completed") {
+          nextStatus = "Pending";
+        }
+
+        return { ...t, steps: updatedSteps, status: nextStatus };
       }
       return t;
     });

@@ -41,11 +41,11 @@ export function RecentTasksList() {
             <ClipboardList size={21} color={theme.primary} />
           </View>
           <View className="justify-center">
-            <Text className="text-[10px] font-black text-primary uppercase tracking-widest leading-3">
-              Overview
+            <Text className="text-lg font-black text-foreground leading-5 tracking-tight">
+              Recent Tasks
             </Text>
-            <Text className="text-lg font-black text-foreground mt-0.5 leading-5 tracking-tight">
-              Today's Focus
+            <Text className="text-[10px] mt-0.5 font-black text-primary uppercase tracking-widest leading-3">
+              Overview
             </Text>
           </View>
         </View>
@@ -115,9 +115,9 @@ export function RecentTasksList() {
                 }}
                 className="active:opacity-75"
               >
-                <Card
+                <View
                   className={cn(
-                    "border border-border/10 rounded-3xl px-4 pt-3.5 pb-2.5 shadow-sm bg-secondary/40",
+                    "bg-secondary/40 border border-border/10 rounded-2xl px-4 pt-3.5 pb-3",
                     isCompleted ? "opacity-60" : ""
                   )}
                 >
@@ -148,7 +148,7 @@ export function RecentTasksList() {
                   </View>
 
                   {/* Bottom Metadata Section */}
-                  <View className="flex-row flex-wrap gap-1.5 border-t border-border/10 -mt-6">
+                  <View className="flex-row flex-wrap gap-1.5 border-t border-border/10 pt-2.5">
                     {/* 1. Priority Indicator Pill */}
                     {task.category === "Urgent" && (
                       <View className="bg-destructive/10 border border-destructive/20 px-2 py-0.5 rounded-lg">
@@ -182,7 +182,7 @@ export function RecentTasksList() {
                       </View>
                     )}
                   </View>
-                </Card>
+                </View>
               </Pressable>
             );
           })}

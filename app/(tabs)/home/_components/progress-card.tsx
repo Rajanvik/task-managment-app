@@ -36,11 +36,11 @@ export function ProgressCard({ completedTasks, progressPercentage }: ProgressCar
               )}
             </View>
             <View className="justify-center">
+              <Text className="text-lg font-black text-foreground leading-5 tracking-tight">
+                Weekly Goals
+              </Text>
               <Text className={`text-[10px] font-black ${isFinished ? 'text-amber-500' : 'text-green-600'} uppercase tracking-widest leading-3`}>
                 Productivity
-              </Text>
-              <Text className="text-lg font-black text-foreground mt-0.5 leading-5 tracking-tight">
-                Weekly Goals
               </Text>
             </View>
           </View>

@@ -60,14 +60,15 @@ export default function AnalyticsScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* PREMIUM STATS HEADER SECTION */}
         <AnimatedReveal variant="slide-down" delay={50} duration={400}>
-          <View className="px-6 pt-14 pb-6">
-            <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="text-muted-foreground text-xs uppercase font-extrabold tracking-wider">
-                  Workspace
-                </Text>
-                <Text className="text-[34px] font-extrabold tracking-tight text-foreground mt-0.5">
+          <View className="px-6 pt-14 pb-6 relative overflow-hidden">
+            <View className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full" />
+            <View className="flex-row justify-between items-start z-10">
+              <View className="flex-1">
+                <Text className="text-[34px] font-extrabold tracking-tight text-foreground">
                   Stats
+                </Text>
+                <Text className="text-muted-foreground text-sm font-medium mt-1 leading-5">
+                  Analyze your productivity metrics, task completion velocities, and milestones.
                 </Text>
               </View>
             </View>

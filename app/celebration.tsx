@@ -34,7 +34,7 @@ const CONFETTI_COLORS = [
 ];
 
 const SHAPES = ["circle", "square", "triangle", "rectangle"];
-const PARTICLE_COUNT = 45; // Sweet-spot of high density (45 particles) that mounts extremely fast!
+const PARTICLE_COUNT = 60; // Denser, more luxurious, and highly optimized!
 
 // PERFORMANCE MIRACLE: Pre-calculate ALL randomized variables outside the component render cycle!
 // This eliminates runtime Math.random overhead during the critical mount phase entirely.
@@ -43,18 +43,31 @@ const PRE_CALCULATED_PARTICLES = Array.from({ length: PARTICLE_COUNT }).map((_, 
   const shape = SHAPES[index % SHAPES.length];
   const size = Math.floor(Math.random() * 8) + 6; // size: 6 to 14
   
-  // Distribute starts beautifully across coordinates
-  const startX = Math.random() * SCREEN_WIDTH;
-  const startY = index % 2 === 0
-    ? -20 - Math.random() * 80 
-    : Math.random() * (SCREEN_HEIGHT * 0.35); // scattered down
+  // Dual launch popper coordinates (left and right bottom corners)
+  const isLeftCannon = index % 2 === 0;
+  const startX = isLeftCannon ? 15 : SCREEN_WIDTH - 15;
+  const startY = SCREEN_HEIGHT - 40;
+  
+  // Physics-based path parameters (explosion arch)
+  const endXOffset = isLeftCannon
+    ? Math.random() * (SCREEN_WIDTH * 0.7) + (SCREEN_WIDTH * 0.15) // left shoots to the right
+    : -(Math.random() * (SCREEN_WIDTH * 0.7) + (SCREEN_WIDTH * 0.15)); // right shoots to the left
     
-  const startRotation = Math.random() * 360;
-  const duration = Math.floor(Math.random() * 1200) + 1400; // 1.4s to 2.6s duration
+  const heightY = Math.random() * (SCREEN_HEIGHT * 0.75) + (SCREEN_HEIGHT * 0.35); // how high it shoots
+  const gravityDrop = Math.random() * 120 + 80; // natural arch gravity drop at peak
+  const drift = Math.random() * 40 - 20; // soft air wobble
   const wavePhase = Math.random() * Math.PI * 2;
   
-  // Smooth staggered start delay (0 to 180ms) to spread CPU load spikes evenly on the UI thread
-  const delay = Math.floor(Math.random() * 180);
+  // Multi-axis 3D rotation values for premium shimmer & paper flutter
+  const startRotationX = Math.random() * 360;
+  const startRotationY = Math.random() * 360;
+  const startRotationZ = Math.random() * 360;
+  const rotXSpeed = Math.random() * 1080 + 360;
+  const rotYSpeed = Math.random() * 1080 + 360;
+  const rotZSpeed = Math.random() * 720 + 360;
+
+  const duration = Math.floor(Math.random() * 800) + 1800; // 1.8s to 2.6s flight duration
+  const delay = Math.floor(Math.random() * 350); // staggered launch
 
   return {
     color,
@@ -62,9 +75,18 @@ const PRE_CALCULATED_PARTICLES = Array.from({ length: PARTICLE_COUNT }).map((_, 
     size,
     startX,
     startY,
-    startRotation,
-    duration,
+    endXOffset,
+    heightY,
+    gravityDrop,
+    drift,
     wavePhase,
+    startRotationX,
+    startRotationY,
+    startRotationZ,
+    rotXSpeed,
+    rotYSpeed,
+    rotZSpeed,
+    duration,
     delay,
   };
 });
@@ -75,42 +97,41 @@ const ConfettiParticle = React.memo(({ config }: { config: typeof PRE_CALCULATED
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    // Loop the confetti cascade infinitely on the native UI thread so celebration always stays lively!
-    progress.value = withRepeat(
-      withDelay(
-        config.delay,
-        withTiming(1, {
-          duration: config.duration,
-          easing: Easing.linear,
-        })
-      ),
-      -1, // Loop infinitely
-      false // Reset to start value on restart (keep cascade falling)
+    // Launch the 3D confetti blast on the native UI thread
+    progress.value = withDelay(
+      config.delay,
+      withTiming(1, {
+        duration: config.duration,
+        easing: Easing.out(Easing.cubic), // natural explosion burst slowing down at peak
+      })
     );
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
     const p = progress.value;
 
-    // Elegant gravity calculation
-    const ty = config.startY + p * (SCREEN_HEIGHT + 80 - config.startY);
+    // Premium parabolic path: rises fast, slows down, curves down due to gravity
+    const ty = config.startY - p * config.heightY + (p * p) * config.gravityDrop;
+    const tx = config.startX + p * config.endXOffset + Math.sin(p * Math.PI * 2 + config.wavePhase) * config.drift;
     
-    // Wave-like floating wind horizontal drift using sine waves
-    const tx = config.startX + Math.sin(p * Math.PI * 2 + config.wavePhase) * 25;
+    // Shimmering 3D flutter rotations
+    const rotX = config.startRotationX + p * config.rotXSpeed;
+    const rotY = config.startRotationY + p * config.rotYSpeed;
+    const rotZ = config.startRotationZ + p * config.rotZSpeed;
     
-    const rot = config.startRotation + p * 720;
+    // Smooth zoom pop in first 10% progress
+    const sc = p < 0.1 ? p / 0.1 : 1;
     
-    // Custom pop scaling in first 15% progress
-    const sc = p < 0.15 ? p / 0.15 : 1;
-    
-    // Custom soft fade out in last 20% progress
-    const op = p > 0.8 ? (1 - p) / 0.2 : 1;
+    // Elegant soft fade-out in last 15% progress
+    const op = p > 0.85 ? Math.max(0, (1 - p) / 0.15) : 1;
 
     return {
       transform: [
         { translateX: tx },
         { translateY: ty },
-        { rotate: `${rot}deg` },
+        { rotateX: `${rotX}deg` },
+        { rotateY: `${rotY}deg` },
+        { rotateZ: `${rotZ}deg` },
         { scale: sc },
       ],
       opacity: op,
@@ -137,6 +158,7 @@ export default function CelebrationScreen() {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme];
+  const [showConfetti, setShowConfetti] = useState(true);
 
   // Route params
   const { title = "Superb Progress!", description = "You are doing amazing. Keep conquering your checklists!", type = "complete" } =
@@ -174,8 +196,14 @@ export default function CelebrationScreen() {
       true
     );
 
+    // Completely unmount/stop rendering confetti after 4 seconds (after they have all fallen and faded out)
+    const timer = setTimeout(() => {
+      setShowConfetti(false);
+    }, 4000);
+
     return () => {
       backHandler.remove();
+      clearTimeout(timer);
     };
   }, []);
 
@@ -198,14 +226,16 @@ export default function CelebrationScreen() {
     <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
       {/* 
         INSTANT PARTICLES MOUNT LAYER (0ms Mount Latency!)
-        Pre-calculated variables + React.memo + Staggered delay timing + Infinite repeating loops
+        Pre-calculated variables + React.memo + Staggered delay timing
         ensures particles start falling instantly on UI thread without any JS timeouts!
       */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        {PRE_CALCULATED_PARTICLES.map((config, i) => (
-          <ConfettiParticle key={i} config={config} />
-        ))}
-      </View>
+      {showConfetti && (
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          {PRE_CALCULATED_PARTICLES.map((config, i) => (
+            <ConfettiParticle key={i} config={config} />
+          ))}
+        </View>
+      )}
 
       {/* Soft background ambient radial glows */}
       <View

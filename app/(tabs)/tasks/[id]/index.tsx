@@ -15,10 +15,12 @@ import type { SubTask } from '@/app/(tabs)/tasks/data/task-data';
 interface SubTaskItemProps {
   step: SubTask;
   taskId: string;
+  taskTitle: string;
+  allSteps: SubTask[];
   toggleSubTask: (taskId: string, subTaskId: string) => void;
 }
 
-function SubTaskItem({ step, taskId, toggleSubTask }: SubTaskItemProps) {
+function SubTaskItem({ step, taskId, taskTitle, allSteps, toggleSubTask }: SubTaskItemProps) {
   const router = useRouter();
   const [localCompleted, setLocalCompleted] = React.useState(step.completed);
 
@@ -32,20 +34,34 @@ function SubTaskItem({ step, taskId, toggleSubTask }: SubTaskItemProps) {
     // 1. Instantly tick locally in the current frame
     setLocalCompleted(nextCompleted);
 
+    // Check if this action completes the entire task
+    const completesTask = nextCompleted && allSteps.filter(s => s.id !== step.id).every(s => s.completed);
+
     // 2. Schedule the navigation push in the very next animation paint frame.
     // This allows the step tick to render instantly with zero lag,
     // and then launches the transition with zero stutters!
     requestAnimationFrame(() => {
-      router.push({
-        pathname: '/celebration',
-        params: {
-          title: nextCompleted ? 'Step Completed! 🎉' : 'Step Reactivated ⚙️',
-          description: nextCompleted
-            ? `Awesome! You completed the step: "${step.title}".`
-            : `Step: "${step.title}" is now active again.`,
-          type: nextCompleted ? 'complete' : 'add'
-        }
-      });
+      if (completesTask) {
+        router.push({
+          pathname: '/celebration',
+          params: {
+            title: 'Victory! Task Completed 🥳',
+            description: `Fantastic job! You have successfully finished "${taskTitle}" by completing all steps. Keep up the superb momentum!`,
+            type: 'complete'
+          }
+        });
+      } else {
+        router.push({
+          pathname: '/celebration',
+          params: {
+            title: nextCompleted ? 'Step Completed! 🎉' : 'Step Reactivated ⚙️',
+            description: nextCompleted
+              ? `Awesome! You completed the step: "${step.title}".`
+              : `Step: "${step.title}" is now active again.`,
+            type: nextCompleted ? 'complete' : 'add'
+          }
+        });
+      }
     });
 
     // 3. Defer store modifications until the slide animation is fully complete (600ms)
@@ -206,6 +222,8 @@ export default function TaskDetailsScreen() {
                     key={step.id}
                     step={step}
                     taskId={task.id}
+                    taskTitle={title}
+                    allSteps={steps}
                     toggleSubTask={toggleSubTask}
                   />
                 ))}

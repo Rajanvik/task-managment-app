@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
-import { Sunrise, Sun, Sunset, Moon, Clock } from 'lucide-react-native';
+import { Sunrise, Sun, Sunset, Moon, Clock, Calendar } from 'lucide-react-native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { THEME } from '@/lib/theme';
 
@@ -36,6 +36,7 @@ export function RealTimeClock() {
   const dayName = weekdays[time.getDay()];
   const monthName = months[time.getMonth()];
   const dateNum = time.getDate();
+  const yearNum = time.getFullYear();
 
   // Dynamic greetings based on hour of day
   const { greeting, IconComponent } = useMemo(() => {
@@ -60,70 +61,75 @@ export function RealTimeClock() {
   }, [hours]);
 
   return (
-    <View className="pt-4 gap-3.5">
-      {/* Row 1: Dynamic Greeting (Left) & Today's Date Status (Right) */}
+    <View className="pt-4 gap-1.5">
+      {/* Row 1: Greeting & Date */}
       <View className="flex-row items-center justify-between">
-        {/* Dynamic Greeting with Glass Icon Wrapper */}
-        <View className="flex-row items-center gap-2.5">
-          <View className="w-8 h-8 rounded-xl items-center justify-center bg-white/80 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-sm">
-            <IconComponent size={16} color={theme.primary} strokeWidth={2} />
+        <View className="flex-row items-center gap-1">
+          <View className="w-9 h-9 rounded-full items-center justify-center bg-primary/10">
+            <IconComponent size={18} color={theme.primary} strokeWidth={2.5} />
           </View>
-          <Text className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+          <Text className="text-sm font-black text-foreground uppercase tracking-widest">
             {greeting}
           </Text>
         </View>
 
-        {/* Floating Date Badge */}
-        <View className="bg-secondary dark:bg-muted border border-border/50 px-3 py-1 rounded-xl shadow-sm">
+        <View className="flex-row items-center gap-1.5 bg-secondary dark:bg-muted border border-border/50 pl-1 pr-3 py-0.5 rounded-lg">
+          <View className="w-6 h-6 rounded-md items-center justify-center bg-primary/10">
+            <Calendar size={12} color={theme.primary} strokeWidth={2.5} />
+          </View>
           <Text className="text-xs font-extrabold text-foreground">
-            {dayName}, {monthName} {dateNum}
+            {dayName}, {monthName} {dateNum}, {yearNum}
           </Text>
         </View>
       </View>
 
-      {/* Row 2: Gorgeous Centered Digital Time Capsule (Symmetric and clean) */}
-      <View className="flex-row items-center justify-center gap-2 bg-secondary/50 dark:bg-muted/40 border border-border/50 rounded-2xl py-2 px-4 shadow-sm">
-        {/* Consistent Glass Clock Icon Wrapper (Matching Row 1 completely) */}
-        <View className="w-8 h-8 rounded-xl items-center justify-center bg-white/80 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-sm mr-1.5">
-          <Clock size={16} color={theme.primary} strokeWidth={2} />
+      {/* Row 2: Digital Time */}
+      <View className="flex-row items-center justify-between mt-1.5">
+        {/* Clock Label (Left aligned) */}
+        <View className="flex-row items-center gap-1.5">
+          <View className="w-9 h-9 rounded-full items-center justify-center bg-primary/10">
+            <Clock size={18} color={theme.primary} strokeWidth={2.5} />
+          </View>
+          <Text className="text-sm font-black text-foreground uppercase tracking-widest">
+             Time
+          </Text>
         </View>
         
-        {/* HH Card */}
-        <View className="w-9 h-9 rounded-xl items-center justify-center bg-white/80 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-sm shadow-black/5">
-          <Text className="text-sm font-black text-foreground font-mono">
-            {displayHour}
-          </Text>
-        </View>
+        {/* Unified Time Card (Right aligned) */}
+        <View className="flex-row items-center bg-secondary dark:bg-muted border border-border/50 pl-3 pr-1 py-1 rounded-xl">
+          <View className="flex-row items-center mr-1.5 gap-1">
+            {/* HH */}
+            <View className="bg-background dark:bg-background/50 border border-border/50 px-1.5 py-0.5 rounded-md shadow-sm">
+              <Text className="text-sm font-black text-foreground font-mono">
+                {displayHour}
+              </Text>
+            </View>
+            
+            <Text className="text-xs font-black text-muted-foreground/50 font-mono">:</Text>
+            
+            {/* MM */}
+            <View className="bg-background dark:bg-background/50 border border-border/50 px-1.5 py-0.5 rounded-md shadow-sm">
+              <Text className="text-sm font-black text-foreground font-mono">
+                {minutes}
+              </Text>
+            </View>
+            
+            <Text className="text-xs font-black text-muted-foreground/50 font-mono">:</Text>
+            
+            {/* SS */}
+            <View className="bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-md shadow-sm">
+              <Text className="text-sm font-black text-primary font-mono">
+                {seconds}
+              </Text>
+            </View>
+          </View>
 
-        {/* Separator */}
-        <Text className="text-xs font-black text-muted-foreground/60 font-mono">
-          :
-        </Text>
-
-        {/* MM Card */}
-        <View className="w-9 h-9 rounded-xl items-center justify-center bg-white/80 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-sm shadow-black/5">
-          <Text className="text-sm font-black text-foreground font-mono">
-            {minutes}
-          </Text>
-        </View>
-
-        {/* Separator */}
-        <Text className="text-xs font-black text-muted-foreground/60 font-mono">
-          :
-        </Text>
-
-        {/* SS Card */}
-        <View className="w-9 h-9 rounded-xl items-center justify-center bg-white/80 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-sm shadow-black/5">
-          <Text className="text-sm font-black text-primary font-mono">
-            {seconds}
-          </Text>
-        </View>
-
-        {/* AM/PM Badge */}
-        <View className="bg-primary px-2 py-1 rounded-lg ml-1">
-          <Text className="text-[9px] font-black text-primary-foreground font-mono uppercase">
-            {ampm}
-          </Text>
+          {/* AM/PM */}
+          <View className="bg-primary px-2 py-1 rounded-lg">
+            <Text className="text-[10px] font-black text-primary-foreground font-mono uppercase tracking-widest">
+              {ampm}
+            </Text>
+          </View>
         </View>
       </View>
     </View>

@@ -1,0 +1,10 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0F8FF" />
+      <stop offset="100%" stop-color="#E6F4FE" />
+    </linearGradient>
+  </defs>
+  <!-- Full-bleed background rect -->
+  <rect width="512" height="512" fill="url(#bgGrad)" />
+</svg>

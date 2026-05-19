@@ -125,21 +125,22 @@ export default function TasksScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* PREMIUM TASK HEADER SECTION */}
         <AnimatedReveal variant="slide-down" delay={50} duration={400}>
-          <View className="px-6 pt-14 pb-6">
-            <View className="flex-row justify-between items-center">
-              <View>
-                <Text className="text-muted-foreground text-xs uppercase font-extrabold tracking-wider">
-                  Workspace
+          <View className="px-6 pt-14 pb-6 relative overflow-hidden">
+            <View className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full" />
+            <View className="flex-row justify-between items-start z-10">
+              <View className="flex-1 mr-4">
+                <Text className="text-[34px] font-extrabold tracking-tight text-foreground">
+                  Tasks
                 </Text>
-                <Text className="text-[34px] font-extrabold tracking-tight text-foreground mt-0.5">
-                  Task 
+                <Text className="text-muted-foreground text-sm font-medium mt-1 leading-5">
+                  Manage, organize, and track your daily priorities and workspace goals.
                 </Text>
               </View>
 
               {/* Premium action button */}
               <Pressable
                 onPress={() => setIsSheetOpen(true)}
-                className="h-11 w-11 bg-primary rounded-2xl items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.96]"
+                className="h-11 w-11 bg-primary rounded-2xl items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.96] mt-1"
               >
                 <Plus color={theme.primaryForeground} size={22} />
               </Pressable>

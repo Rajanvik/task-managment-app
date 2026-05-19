@@ -104,28 +104,28 @@ export function ReminderCard() {
             <Bell size={21} color={theme.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-[10px] font-bold text-primary uppercase tracking-widest">
-              Smart Assistant
-            </Text>
-            <Text className="text-lg font-bold text-foreground -mt-0.5">
+            <Text className="text-lg font-bold text-foreground">
               Pending Task Reminders
+            </Text>
+            <Text className="text-[10px] -mt-0.5 font-bold text-primary uppercase tracking-widest">
+              Smart Assistant
             </Text>
           </View>
         </View>
 
         {/* Status / Pending Summary */}
         <View className="bg-secondary/40 border border-border/10 rounded-2xl p-4 mb-5 flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
+          <View className="flex-row items-center gap-3 flex-1 mr-3">
             <View
-              className={`h-2.5 w-2.5 rounded-full ${pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"}`}
+              className={`h-2.5 w-2.5 rounded-full shrink-0 ${pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"}`}
             />
-            <View>
+            <View className="flex-1">
               <Text className="text-xs font-semibold text-foreground">
                 {pendingCount > 0
                   ? `${pendingCount} Pending Task${pendingCount > 1 ? "s" : ""} Left`
                   : "All Tasks Completed!"}
               </Text>
-              <Text className="text-[10px] text-muted-foreground mt-0.5">
+              <Text className="text-[10px] text-muted-foreground mt-0.5 leading-4">
                 {pendingCount > 0
                   ? "Click remind below to test system alerts."
                   : "Enjoy the feeling of a clear list!"}
