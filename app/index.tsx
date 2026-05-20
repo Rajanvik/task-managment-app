@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'expo-router';
-import { ScrollView, Dimensions, SafeAreaView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, ScrollView, useWindowDimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, Compass, ShieldCheck } from 'lucide-react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -13,8 +13,6 @@ import { BackgroundBlobs } from '@/app/(tabs)/_components/onboarding/BackgroundB
 import { OnboardingHeader } from '@/app/(tabs)/_components/onboarding/OnboardingHeader';
 import { OnboardingSlide } from '@/app/(tabs)/_components/onboarding/OnboardingSlide';
 import { OnboardingControls } from '@/app/(tabs)/_components/onboarding/OnboardingControls';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const SLIDES = [
   {
@@ -47,13 +45,14 @@ export default function OnboardingIndex() {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme];
+  const { width: screenWidth } = useWindowDimensions();
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffsetX / SCREEN_WIDTH);
+    const index = Math.round(contentOffsetX / screenWidth);
     if (index !== currentIndex && index >= 0 && index < SLIDES.length) {
       setCurrentIndex(index);
       Haptics.selectionAsync();
@@ -63,7 +62,7 @@ export default function OnboardingIndex() {
   const handleNext = () => {
     if (currentIndex < SLIDES.length - 1) {
       scrollViewRef.current?.scrollTo({
-        x: (currentIndex + 1) * SCREEN_WIDTH,
+        x: (currentIndex + 1) * screenWidth,
         animated: true,
       });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -84,7 +83,7 @@ export default function OnboardingIndex() {
 
   const handleDotPress = (index: number) => {
     scrollViewRef.current?.scrollTo({
-      x: index * SCREEN_WIDTH,
+      x: index * screenWidth,
       animated: true,
     });
     setCurrentIndex(index);
@@ -93,7 +92,7 @@ export default function OnboardingIndex() {
   const activeSlide = SLIDES[currentIndex];
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
       <Animated.View entering={FadeIn.duration(650)} className="flex-1">
         {/* Premium background radial shapes */}
         <BackgroundBlobs />
@@ -116,13 +115,14 @@ export default function OnboardingIndex() {
           onScroll={handleScroll}
           scrollEventThrottle={16}
           className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
         >
           {SLIDES.map((slide, index) => (
             <OnboardingSlide
               key={slide.id}
               slide={slide}
               isActive={index === currentIndex}
-              screenWidth={SCREEN_WIDTH}
+              screenWidth={screenWidth}
             />
           ))}
         </ScrollView>
@@ -137,6 +137,6 @@ export default function OnboardingIndex() {
           theme={theme}
         />
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }

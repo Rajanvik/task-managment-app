@@ -30,13 +30,6 @@ async function generate() {
       height: 1024,
     },
     {
-      name: 'Android Adaptive Background (android-icon-background.png)',
-      input: path.join(ASSETS_DIR, 'android-icon-background.svg'),
-      output: path.join(ASSETS_DIR, 'android-icon-background.png'),
-      width: 1024,
-      height: 1024,
-    },
-    {
       name: 'Android Monochrome Icon (android-icon-monochrome.png)',
       input: path.join(ASSETS_DIR, 'android-icon-monochrome.svg'),
       output: path.join(ASSETS_DIR, 'android-icon-monochrome.png'),

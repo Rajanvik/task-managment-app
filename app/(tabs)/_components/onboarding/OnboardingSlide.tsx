@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -24,6 +24,16 @@ interface OnboardingSlideProps {
 
 export function OnboardingSlide({ slide, isActive, screenWidth }: OnboardingSlideProps) {
   const { Illustration } = slide;
+  const { height: screenHeight } = useWindowDimensions();
+
+  const isSmallScreen = screenHeight < 700;
+  const isTablet = screenWidth >= 768;
+
+  // Limit illustrations to at most 28% of the screen height to prevent vertical content overflow,
+  // and scale the width proportionally to the 280:220 viewBox aspect ratio (~1.27)
+  const maxIllustrationHeight = Math.min(screenHeight * 0.28, isTablet ? 280 : 230);
+  const illustrationWidth = maxIllustrationHeight * 1.27;
+  const illustrationHeight = maxIllustrationHeight;
 
   // Tiny, highly focused loop animation for illustration floating vertical drift
   const floatAnim = useSharedValue(0);
@@ -45,8 +55,8 @@ export function OnboardingSlide({ slide, isActive, screenWidth }: OnboardingSlid
 
   return (
     <View 
-      style={{ width: screenWidth }} 
-      className="flex-1 justify-center items-center px-8 pb-4"
+      style={{ width: screenWidth, height: '100%' }} 
+      className="justify-center items-center px-8 pb-4"
     >
       <View className="items-center justify-center w-full">
         {/* Dynamic Floating & Morphing Illustration Reveal */}
@@ -60,7 +70,7 @@ export function OnboardingSlide({ slide, isActive, screenWidth }: OnboardingSlid
           className="items-center justify-center rounded-[40px] p-0"
         >
           <Animated.View style={animatedFloatStyle}>
-            <Illustration width={screenWidth * 0.88} height={screenWidth * 0.74} />
+            <Illustration width={illustrationWidth} height={illustrationHeight} />
           </Animated.View>
         </AnimatedReveal>
 
@@ -88,10 +98,18 @@ export function OnboardingSlide({ slide, isActive, screenWidth }: OnboardingSlid
             duration={500}
             className="items-center"
           >
-            <Text className="text-4xl font-black text-center tracking-tight text-foreground leading-[44px]">
+            <Text 
+              className={`font-black text-center tracking-tight text-foreground ${
+                isSmallScreen ? 'text-2xl leading-8' : (isTablet ? 'text-4xl leading-[48px]' : 'text-3xl leading-[38px]')
+              }`}
+            >
               {slide.title}
             </Text>
-            <Text className="text-[14px] font-semibold text-center text-muted-foreground mt-2 leading-6 px-2">
+            <Text 
+              className={`font-semibold text-center text-muted-foreground mt-2 px-2 ${
+                isSmallScreen ? 'text-[12px] leading-5' : 'text-[14px] leading-6'
+              }`}
+            >
               {slide.subtitle}
             </Text>
           </AnimatedReveal>

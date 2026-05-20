@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Pressable } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
 import { LucideIcon } from 'lucide-react-native';
 
@@ -23,6 +24,7 @@ export function OnboardingHeader({
   onSkip,
   theme,
 }: OnboardingHeaderProps) {
+  const insets = useSafeAreaInsets();
   // Scale animations for interactive feel
   const logoScale = useSharedValue(1);
   const skipScale = useSharedValue(1);
@@ -54,7 +56,8 @@ export function OnboardingHeader({
   return (
     <Animated.View 
       entering={FadeInDown.duration(600)}
-      className="px-6 py-5 flex-row items-center justify-between z-10 w-full"
+      className="px-6 pb-5 flex-row items-center justify-between z-10 w-full"
+      style={{ paddingTop: Math.max(insets.top, 16) }}
     >
       {/* Brand logo & icon */}
       <Pressable

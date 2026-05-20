@@ -8,6 +8,7 @@ import Animated, {
   withTiming 
 } from 'react-native-reanimated';
 import { ChevronRight, Check } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
 import * as Haptics from 'expo-haptics';
 
@@ -32,6 +33,7 @@ export function OnboardingControls({
   colorScheme,
   theme,
 }: OnboardingControlsProps) {
+  const insets = useSafeAreaInsets();
   const isLastSlide = currentIndex === totalSlides - 1;
   
   // Custom button spring scale factor on press
@@ -57,7 +59,10 @@ export function OnboardingControls({
   };
 
   return (
-    <View className="px-8 pb-10 pt-4 flex-row items-center justify-between w-full">
+    <View 
+      className="px-8 pt-4 pb-2 flex-row items-center justify-between w-full"
+      style={{ paddingBottom: Math.max(insets.bottom, 20) }}
+    >
       {/* Slide Paging Dots Indicator - Made Pressable & Dynamic */}
       <View className="flex-row gap-2.5 items-center">
         {Array.from({ length: totalSlides }).map((_, index) => {
