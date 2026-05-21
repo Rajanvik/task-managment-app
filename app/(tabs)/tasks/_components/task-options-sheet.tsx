@@ -5,8 +5,6 @@ import { Eye, Pencil, Trash2 } from "lucide-react-native";
 import { type Task } from "@/app/(tabs)/tasks/data/task-data";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Text } from "@/components/ui/text";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { THEME } from "@/lib/theme";
 
 interface TaskOptionsSheetProps {
   task: Task | null;
@@ -25,8 +23,7 @@ export function TaskOptionsSheet({
   onEdit,
   onDelete,
 }: TaskOptionsSheetProps) {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
 
   if (!task) return null;
 

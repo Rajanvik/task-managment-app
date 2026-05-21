@@ -2,15 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Sunrise, Sun, Sunset, Moon, Clock, Calendar } from 'lucide-react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 
 export function RealTimeClock() {
   const [time, setTime] = useState(new Date());
-  const { colorScheme } = useColorScheme();
-  
-  // Memoize theme to prevent unnecessary calculations on every second render
-  const theme = useMemo(() => THEME[colorScheme], [colorScheme]);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const timer = setInterval(() => {

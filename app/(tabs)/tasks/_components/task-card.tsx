@@ -6,8 +6,6 @@ import { type Task } from "@/app/(tabs)/tasks/data/task-data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 interface TaskCardProps {
@@ -23,8 +21,7 @@ export function TaskCard({
   onPress,
   onOptionsPress,
 }: TaskCardProps) {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
 
   // Local state for instantaneous visual feedback when tapping the checkbox (0ms delay)
   const [localCompleted, setLocalCompleted] = React.useState(task.status === "Completed");

@@ -13,15 +13,12 @@ import { NoTasksIllustration } from "@/components/illustrations";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { useTasks } from "@/context/TaskContext";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { THEME } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import type { Task, SubTask } from "@/app/(tabs)/tasks/data/task-data";
 
 export function RecentTasksList() {
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
   const { tasks } = useTasks();
 
   // Get up to 3 most important pending or recently updated tasks

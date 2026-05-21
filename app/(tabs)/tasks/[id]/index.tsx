@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ChevronLeft, CheckCircle2, Calendar, CheckSquare, FileText } from 'lucide-react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 import { useTasks } from '@/context/TaskContext';
 import { toast } from '@/lib/toast';
 import type { SubTask } from '@/app/(tabs)/tasks/data/task-data';
@@ -90,8 +88,7 @@ function SubTaskItem({ step, taskId, taskTitle, allSteps, toggleSubTask }: SubTa
 export default function TaskDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
   const { tasks, toggleStatus, toggleSubTask } = useTasks();
 
   const task = tasks.find((t) => t.id === String(id));

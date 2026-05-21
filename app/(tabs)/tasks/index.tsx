@@ -12,18 +12,15 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { type Task } from "@/app/(tabs)/tasks/data/task-data";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Text } from "@/components/ui/text";
 import { useTasks } from "@/context/TaskContext";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { THEME } from "@/lib/theme";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { NoTasksIllustration } from "@/components/illustrations";
 
 import { DeleteTaskAlert } from "./_components/delete-task-alert";
 import { TaskCard } from "./_components/task-card";
-import { TaskForm } from "./_components/task-form";
+
 import { TaskOptionsSheet } from "./_components/task-options-sheet";
 import { AnimatedReveal } from "@/components/ui/animated-reveal";
 
@@ -55,14 +52,11 @@ function EmptyStateIllustration() {
 }
 
 export default function TasksScreen() {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
   const router = useRouter();
-  const { tasks, addTask, deleteTask, updateTask, toggleStatus } = useTasks();
+  const { tasks, deleteTask, toggleStatus } = useTasks();
 
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
-  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -139,7 +133,7 @@ export default function TasksScreen() {
 
               {/* Premium action button */}
               <Pressable
-                onPress={() => setIsSheetOpen(true)}
+                onPress={() => router.push('/tasks/add' as any)}
                 className="h-11 w-11 bg-primary rounded-2xl items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.96] mt-1"
               >
                 <Plus color={theme.primaryForeground} size={22} />
@@ -227,7 +221,7 @@ export default function TasksScreen() {
 
                 {/* 3. Dynamic Quick Add button to make it actionable! */}
                 <Pressable
-                  onPress={() => setIsSheetOpen(true)}
+                  onPress={() => router.push('/tasks/add' as any)}
                   className="mt-6 px-5 py-2.5 bg-secondary/50 dark:bg-secondary/10 border border-border/40 rounded-full active:scale-95 flex-row items-center gap-2"
                 >
                   <Plus size={14} color={theme.foreground} />
@@ -276,35 +270,7 @@ export default function TasksScreen() {
         </View>
       </ScrollView>
 
-      {/* Task Add Form Sheet */}
-      <BottomSheet
-        visible={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
-        title="New Task"
-        description="Please fill out the details below."
-      >
-        <TaskForm
-          onSubmit={(t) => {
-            setIsSheetOpen(false);
-            
-            // 1. Instantly trigger celebration modal slide up
-            router.push({
-              pathname: "/celebration",
-              params: {
-                title: "Task Successfully Created",
-                description: `"${t.title}" has been successfully added to your checklist. Let's make progress!`,
-                type: "add"
-              }
-            });
-            
-            // 2. Perform the save operations in the background after the slide transition completes (600ms)
-            setTimeout(() => {
-              addTask({ ...t, category: t.category as any });
-            }, 600);
-          }}
-          onCancel={() => setIsSheetOpen(false)}
-        />
-      </BottomSheet>
+
 
       {/* Options sheet */}
       <TaskOptionsSheet
@@ -321,8 +287,10 @@ export default function TasksScreen() {
             });
         }}
         onEdit={() => {
-          setTaskToEdit(selectedTask);
+          const task = selectedTask;
           setSelectedTaskId(null);
+          if (task)
+            router.push({ pathname: '/tasks/edit/[id]' as any, params: { id: task.id } });
         }}
         onDelete={() => {
           const id = selectedTaskId;
@@ -347,48 +315,7 @@ export default function TasksScreen() {
         }}
       />
 
-      {/* Task Edit Form Sheet */}
-      <BottomSheet
-        visible={!!taskToEdit}
-        onClose={() => setTaskToEdit(null)}
-        title="Edit Task"
-        description="Update your task details."
-      >
-        <TaskForm
-          initialData={
-            taskToEdit
-              ? {
-                  title: taskToEdit.title,
-                  description: taskToEdit.description || "",
-                  category: taskToEdit.category,
-                  dueDate: taskToEdit.dueDate,
-                  steps: taskToEdit.steps || [],
-                }
-              : undefined
-          }
-          onSubmit={(t) => {
-            if (taskToEdit) {
-              setTaskToEdit(null);
-              
-              // 1. Immediately launch celebration screen
-              router.push({
-                pathname: "/celebration",
-                params: {
-                  title: "Task Successfully Updated",
-                  description: `"${t.title}" has been successfully updated in your list.`,
-                  type: "add"
-                }
-              });
-              
-              // 2. Process database state changes after the slide transition completes (600ms)
-              setTimeout(() => {
-                updateTask(taskToEdit.id, { ...t, category: t.category as any });
-              }, 600);
-            }
-          }}
-          onCancel={() => setTaskToEdit(null)}
-        />
-      </BottomSheet>
+
     </View>
   );
 }

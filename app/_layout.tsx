@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, LogBox } from 'react-native';
@@ -11,6 +11,8 @@ import '../global.css';
 
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/hooks/use-theme';
+(global as any).useTheme = useTheme;
 import { NAV_THEME } from '@/lib/theme';
 import { TaskProvider, useTasks } from '@/context/TaskContext';
 import { Toaster } from '@/components/ui/toaster';

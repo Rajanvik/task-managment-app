@@ -2,8 +2,6 @@ import React from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 import Animated, { 
   useAnimatedStyle, 
   useSharedValue, 
@@ -44,8 +42,7 @@ function EmptyStateIllustration() {
 }
 
 export default function AnalyticsScreen() {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
 
   const handleNotifyMe = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

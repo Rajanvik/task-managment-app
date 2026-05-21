@@ -5,8 +5,6 @@ import { Target, Trophy, Sparkles } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 
 interface ProgressCardProps {
   completedTasks: number;
@@ -14,8 +12,7 @@ interface ProgressCardProps {
 }
 
 export function ProgressCard({ completedTasks, progressPercentage }: ProgressCardProps) {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
   const isFinished = progressPercentage === 100;
 
   return (

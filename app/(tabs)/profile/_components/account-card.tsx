@@ -9,14 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { LogOut, Settings, RotateCcw } from 'lucide-react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 import { toast } from '@/lib/toast';
 
 export function AccountCard() {
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
 
   const handleResetOnboarding = async () => {
     try {

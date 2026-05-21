@@ -5,8 +5,6 @@ import * as Haptics from 'expo-haptics';
 import { Sparkles, Compass, ShieldCheck } from 'lucide-react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 import { PlanIllustration, OrganizeIllustration, AchieveIllustration } from '@/components/illustrations';
 
 import { BackgroundBlobs } from '@/app/(tabs)/_components/onboarding/BackgroundBlobs';
@@ -43,8 +41,7 @@ const SLIDES = [
 
 export default function OnboardingIndex() {
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { colorScheme, theme } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
   
   const [currentIndex, setCurrentIndex] = useState(0);

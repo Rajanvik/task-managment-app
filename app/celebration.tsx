@@ -15,8 +15,6 @@ import { Check } from "lucide-react-native";
 
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { THEME } from "@/lib/theme";
 import { PlanIllustration, AchieveIllustration } from "@/components/illustrations";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -156,8 +154,7 @@ const ConfettiParticle = React.memo(({ config }: { config: typeof PRE_CALCULATED
 
 export default function CelebrationScreen() {
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
   const [showConfetti, setShowConfetti] = useState(true);
 
   // Route params

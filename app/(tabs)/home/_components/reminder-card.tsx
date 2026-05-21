@@ -11,20 +11,17 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { useTasks } from "@/context/TaskContext";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   cancelAllReminders,
   registerForNotificationsAsync,
   scheduleDailyPendingReminder,
   triggerImmediateReminder,
 } from "@/lib/notifications";
-import { THEME } from "@/lib/theme";
 import type { Task } from "@/app/(tabs)/tasks/data/task-data";
 import { toast } from "@/lib/toast";
 
 export function ReminderCard() {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const { theme } = useTheme();
   const { tasks } = useTasks();
 
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);

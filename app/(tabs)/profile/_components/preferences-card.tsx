@@ -5,14 +5,13 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Bell, Moon, Sun, User } from 'lucide-react-native';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { registerForNotificationsAsync, cancelAllReminders } from '@/lib/notifications';
 import { toast } from '@/lib/toast';
 
 export function PreferencesCard() {
   const [notifications, setNotifications] = React.useState(true);
   const [profileVisibility, setProfileVisibility] = React.useState(true);
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme } = useTheme();
   const isDark = colorScheme === 'dark';
 
   const toggleTheme = (value: boolean) => {

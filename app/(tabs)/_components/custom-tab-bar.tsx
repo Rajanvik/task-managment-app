@@ -1,8 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
 import { Text } from '@/components/ui/text';
 import Animated, { 
   useSharedValue, 
@@ -270,8 +268,7 @@ const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPre
 });
 
 export function CustomTabBar({ state, descriptors, navigation }: any) {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme] || THEME.light;
+  const { colorScheme, theme } = useTheme();
   const insets = useSafeAreaInsets();
 
   const doNav = useCallback((routeName: string, routeKey: string, focused: boolean) => {
