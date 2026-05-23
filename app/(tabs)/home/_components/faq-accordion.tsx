@@ -8,7 +8,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export function FaqAccordion() {
+interface IFaqAccordionProps {}
+
+export const FaqAccordion: React.FC<IFaqAccordionProps> = () => {
   return (
     <View className="bg-muted/30 rounded-3xl p-5 mb-6">
       <Text className="text-lg font-bold mb-3 text-foreground">

@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, View } from "react-native";
 import { Eye, Pencil, Trash2 } from "lucide-react-native";
 
-import { type Task } from "@/app/(tabs)/tasks/data/task-data";
+import { type Task } from "@/services/tasks";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Text } from "@/components/ui/text";
 
@@ -15,14 +15,14 @@ interface TaskOptionsSheetProps {
   onDelete: () => void;
 }
 
-export function TaskOptionsSheet({
+export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
   task,
   visible,
   onClose,
   onView,
   onEdit,
   onDelete,
-}: TaskOptionsSheetProps) {
+}) => {
   const { theme } = useTheme();
 
   if (!task) return null;

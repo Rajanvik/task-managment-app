@@ -12,14 +12,15 @@ import { Pressable, View } from "react-native";
 import { NoTasksIllustration } from "@/components/illustrations";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { useTasks } from "@/context/TaskContext";
+import { TaskDataHook } from "@/hooks/data-hooks/use-task";
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import type { Task, SubTask } from "@/app/(tabs)/tasks/data/task-data";
+import type { Task, SubTask } from "@/services/tasks";
 
 export function RecentTasksList() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { tasks } = useTasks();
+  const { data: tasks = [] } = TaskDataHook.useTasksList();
 
   // Get up to 3 most important pending or recently updated tasks
   const displayTasks = React.useMemo(() => {

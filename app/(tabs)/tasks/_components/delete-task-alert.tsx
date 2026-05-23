@@ -1,15 +1,16 @@
 import React from 'react';
 import { Text } from '@/components/ui/text';
+import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { Trash2 } from 'lucide-react-native';
 import { 
   AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
   AlertDialogContent, 
   AlertDialogDescription, 
   AlertDialogFooter, 
   AlertDialogHeader, 
-  AlertDialogTitle 
+  AlertDialogTitle,
+  AlertDialogMedia
 } from '@/components/ui/alert-dialog';
 
 interface DeleteTaskAlertProps {
@@ -19,29 +20,40 @@ interface DeleteTaskAlertProps {
   onConfirm: () => void;
 }
 
-export function DeleteTaskAlert({ visible, isDeleting, onCancel, onConfirm }: DeleteTaskAlertProps) {
+export const DeleteTaskAlert: React.FC<DeleteTaskAlertProps> = ({ visible, isDeleting, onCancel, onConfirm }) => {
   return (
-    <AlertDialog open={visible} onOpenChange={(open) => !open && onCancel()}>
+    // onOpenChange me isDeleting guard: deletion chal rahi ho tab dialog band nahi hoga
+    <AlertDialog open={visible} onOpenChange={(open) => !open && !isDeleting && onCancel()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+            <Trash2 size={20} color="#ef4444" />
+          </AlertDialogMedia>
+          <AlertDialogTitle className="text-center">Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription className="text-center">
             This action cannot be undone. This will permanently delete this task and remove it from your local storage.
           </AlertDialogDescription>
         </AlertDialogHeader>
+
         <AlertDialogFooter className="mt-4 w-full">
-          <AlertDialogCancel variant="outline" className="flex-1 rounded-xl" disabled={isDeleting} onPress={onCancel}>
-            <Text>Cancel</Text>
-          </AlertDialogCancel>
-          <AlertDialogAction 
-            variant="destructive"
+          <Button
+            variant="outline"
             className="flex-1 rounded-xl"
             disabled={isDeleting}
-            onPress={onConfirm} 
+            onPress={onCancel}
+          >
+            <Text>Cancel</Text>
+          </Button>
+
+          <Button
+            variant="destructive"
+            className="flex-1 rounded-xl flex-row items-center justify-center gap-2"
+            disabled={isDeleting}
+            onPress={onConfirm}
           >
             {isDeleting && <Spinner size={16} color="white" />}
-            <Text>Continue</Text>
-          </AlertDialogAction>
+            <Text>{isDeleting ? 'Deleting...' : 'Continue'}</Text>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

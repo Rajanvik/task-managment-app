@@ -25,14 +25,14 @@ interface OnboardingControlsProps {
   };
 }
 
-export function OnboardingControls({
+export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
   currentIndex,
   totalSlides,
   onDotPress,
   onNext,
   colorScheme,
   theme,
-}: OnboardingControlsProps) {
+}) => {
   const insets = useSafeAreaInsets();
   const isLastSlide = currentIndex === totalSlides - 1;
   

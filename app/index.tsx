@@ -3,14 +3,15 @@ import { useRouter } from 'expo-router';
 import { View, ScrollView, useWindowDimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, Compass, ShieldCheck } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { PlanIllustration, OrganizeIllustration, AchieveIllustration } from '@/components/illustrations';
-
 import { BackgroundBlobs } from '@/app/(tabs)/_components/onboarding/BackgroundBlobs';
 import { OnboardingHeader } from '@/app/(tabs)/_components/onboarding/OnboardingHeader';
 import { OnboardingSlide } from '@/app/(tabs)/_components/onboarding/OnboardingSlide';
 import { OnboardingControls } from '@/app/(tabs)/_components/onboarding/OnboardingControls';
+import { useTheme } from '@/hooks/use-theme';
 
 const SLIDES = [
   {
@@ -39,7 +40,9 @@ const SLIDES = [
   },
 ];
 
-export default function OnboardingIndex() {
+interface IOnboardingIndexProps {}
+
+const OnboardingIndex: React.FC<IOnboardingIndexProps> = () => {
   const router = useRouter();
   const { colorScheme, theme } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
@@ -58,8 +61,10 @@ export default function OnboardingIndex() {
 
   const handleNext = () => {
     if (currentIndex < SLIDES.length - 1) {
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
       scrollViewRef.current?.scrollTo({
-        x: (currentIndex + 1) * screenWidth,
+        x: nextIndex * screenWidth,
         animated: true,
       });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -68,9 +73,15 @@ export default function OnboardingIndex() {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.replace('/home');
+    try {
+      await AsyncStorage.setItem('onboardingCompleted', 'true');
+      router.replace('/login' as any);
+    } catch (err) {
+      console.error('Failed to save onboarding completion state:', err);
+      router.replace('/login' as any);
+    }
   };
 
   const handleSkip = () => {
@@ -136,4 +147,6 @@ export default function OnboardingIndex() {
       </Animated.View>
     </View>
   );
-}
+};
+
+export default OnboardingIndex;

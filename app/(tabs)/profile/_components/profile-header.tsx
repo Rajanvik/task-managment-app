@@ -4,7 +4,9 @@ import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-export function ProfileHeader() {
+interface IProfileHeaderProps {}
+
+export const ProfileHeader: React.FC<IProfileHeaderProps> = () => {
   return (
     <View className="pt-12 pb-14 px-6 relative overflow-hidden items-center">
       <View className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full" />

@@ -10,9 +10,13 @@
  * Parse a "YYYY-MM-DD" local date string into a Date object
  * whose local year/month/day match exactly (no timezone shift).
  */
-export const parseLocalDate = (dateStr?: string): Date => {
+export const parseLocalDate = (dateStr?: string | null): Date => {
   if (!dateStr) return new Date();
-  const [y, m, d] = dateStr.split('-').map(Number);
+  // ISO datetime string ("2025-05-23T00:00:00.000Z") se sirf date part lo
+  const datePart = dateStr.split('T')[0];
+  const parts = datePart.split('-').map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return new Date();
+  const [y, m, d] = parts;
   return new Date(y, m - 1, d);
 };
 

@@ -8,7 +8,9 @@ import { Bell, Moon, Sun, User } from 'lucide-react-native';
 import { registerForNotificationsAsync, cancelAllReminders } from '@/lib/notifications';
 import { toast } from '@/lib/toast';
 
-export function PreferencesCard() {
+interface IPreferencesCardProps {}
+
+export const PreferencesCard: React.FC<IPreferencesCardProps> = () => {
   const [notifications, setNotifications] = React.useState(true);
   const [profileVisibility, setProfileVisibility] = React.useState(true);
   const { colorScheme, setColorScheme } = useTheme();

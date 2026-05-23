@@ -2,7 +2,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
 
-export function FooterCredit() {
+interface IFooterCreditProps {}
+
+export const FooterCredit: React.FC<IFooterCreditProps> = () => {
   return (
     <View className="items-center pb-8">
       <Text className="text-muted-foreground text-sm font-medium">
@@ -13,4 +15,5 @@ export function FooterCredit() {
       </Text>
     </View>
   );
-}
+};
+

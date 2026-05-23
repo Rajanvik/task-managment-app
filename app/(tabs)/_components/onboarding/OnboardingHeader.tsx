@@ -17,13 +17,13 @@ interface OnboardingHeaderProps {
   };
 }
 
-export function OnboardingHeader({
+export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
   currentIndex,
   totalSlides,
   activeIcon: ActiveIcon,
   onSkip,
   theme,
-}: OnboardingHeaderProps) {
+}) => {
   const insets = useSafeAreaInsets();
   // Scale animations for interactive feel
   const logoScale = useSharedValue(1);

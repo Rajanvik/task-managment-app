@@ -6,9 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ChevronLeft, CheckCircle2, Calendar, CheckSquare, FileText } from 'lucide-react-native';
-import { useTasks } from '@/context/TaskContext';
+import { TaskDataHook } from '@/hooks/data-hooks/use-task';
+import { useTheme } from '@/hooks/use-theme';
 import { toast } from '@/lib/toast';
-import type { SubTask } from '@/app/(tabs)/tasks/data/task-data';
+import { parseLocalDate } from '@/lib/date';
+import { Spinner } from '@/components/ui/spinner';
+import type { SubTask } from '@/services/tasks';
 
 interface SubTaskItemProps {
   step: SubTask;
@@ -16,28 +19,19 @@ interface SubTaskItemProps {
   taskTitle: string;
   allSteps: SubTask[];
   toggleSubTask: (taskId: string, subTaskId: string) => void;
+  disabled?: boolean;
 }
 
-function SubTaskItem({ step, taskId, taskTitle, allSteps, toggleSubTask }: SubTaskItemProps) {
+const SubTaskItem: React.FC<SubTaskItemProps> = ({ step, taskId, taskTitle, allSteps, toggleSubTask, disabled }) => {
   const router = useRouter();
-  const [localCompleted, setLocalCompleted] = React.useState(step.completed);
-
-  React.useEffect(() => {
-    setLocalCompleted(step.completed);
-  }, [step.completed]);
 
   const handlePress = () => {
-    const nextCompleted = !localCompleted;
+    const nextCompleted = !step.completed;
     
-    // 1. Instantly tick locally in the current frame
-    setLocalCompleted(nextCompleted);
-
     // Check if this action completes the entire task
     const completesTask = nextCompleted && allSteps.filter(s => s.id !== step.id).every(s => s.completed);
 
-    // 2. Schedule the navigation push in the very next animation paint frame.
-    // This allows the step tick to render instantly with zero lag,
-    // and then launches the transition with zero stutters!
+    // Schedule the navigation push in the very next animation paint frame.
     requestAnimationFrame(() => {
       if (completesTask) {
         router.push({
@@ -62,43 +56,75 @@ function SubTaskItem({ step, taskId, taskTitle, allSteps, toggleSubTask }: SubTa
       }
     });
 
-    // 3. Defer store modifications until the slide animation is fully complete (600ms)
-    setTimeout(() => {
-      toggleSubTask(taskId, step.id);
-    }, 600);
+    toggleSubTask(taskId, step.id);
   };
 
   return (
     <Pressable
       onPress={handlePress}
-      className="flex-row items-center gap-3 active:opacity-75 py-1"
+      disabled={disabled}
+      className={`flex-row items-center gap-3 py-1 ${disabled ? 'opacity-50' : 'active:opacity-75'}`}
     >
-      {localCompleted ? (
+      {step.completed ? (
         <CheckCircle2 size={20} color="#10b981" />
       ) : (
         <View className="h-5 w-5 rounded-full border-2 border-muted-foreground/30" />
       )}
-      <Text className={`text-base ${localCompleted ? 'text-muted-foreground line-through decoration-muted-foreground/50' : 'text-foreground'}`}>
+      <Text className={`text-base ${step.completed ? 'text-muted-foreground line-through decoration-muted-foreground/50' : 'text-foreground'}`}>
         {step.title}
       </Text>
     </Pressable>
   );
-}
+};
 
-export default function TaskDetailsScreen() {
+interface ITaskDetailsScreenProps {}
+
+const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { theme } = useTheme();
-  const { tasks, toggleStatus, toggleSubTask } = useTasks();
+  const { data: task, isLoading: isTaskLoading } = TaskDataHook.useTaskDetail(String(id));
+  const { mutate: updateTask, isPending: isUpdating } = TaskDataHook.useUpdateTask();
 
-  const task = tasks.find((t) => t.id === String(id));
+  const toggleSubTask = (taskId: string, subTaskId: string) => {
+    if (!task) return;
+    const updatedSteps = task.steps.map((step: any) => {
+      if (step.id === subTaskId) {
+        return { ...step, completed: !step.completed };
+      }
+      return step;
+    });
+
+    const allCompleted = updatedSteps.length > 0 && updatedSteps.every((step: any) => step.completed);
+    const nextStatus = updatedSteps.length > 0 ? (allCompleted ? 'Completed' : 'Pending') : task.status;
+
+    updateTask({
+      id: task.id,
+      data: {
+        status: nextStatus,
+        steps: updatedSteps.map((st: any) => ({
+          title: st.title,
+          completed: st.completed,
+        })),
+      },
+    });
+  };
+
+  if (isTaskLoading) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center p-6 gap-3">
+        <Spinner size={32} color={theme.primary} />
+        <Text className="text-sm font-semibold text-muted-foreground">Loading task details...</Text>
+      </View>
+    );
+  }
 
   if (!task) {
     return (
       <View className="flex-1 bg-background items-center justify-center p-6">
         <Text className="text-xl font-bold text-foreground">Task not found</Text>
         <Button onPress={() => router.back()} className="mt-4">
-          <Text className="font-bold">Go Back</Text>
+          <Text className="font-bold text-primary-foreground">Go Back</Text>
         </Button>
       </View>
     );
@@ -175,7 +201,11 @@ export default function TaskDetailsScreen() {
               </View>
               <View>
                 <Text className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Due Date</Text>
-                <Text className="text-foreground text-sm font-semibold mt-0.5">{dueDate || 'Flexible'}</Text>
+                <Text className="text-foreground text-sm font-semibold mt-0.5">
+                  {dueDate
+                    ? parseLocalDate(dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                    : 'Flexible'}
+                </Text>
               </View>
             </View>
 
@@ -214,7 +244,7 @@ export default function TaskDetailsScreen() {
               </View>
 
               <View className="gap-3.5">
-                {steps.map((step) => (
+                {steps.map((step: SubTask) => (
                   <SubTaskItem
                     key={step.id}
                     step={step}
@@ -222,6 +252,7 @@ export default function TaskDetailsScreen() {
                     taskTitle={title}
                     allSteps={steps}
                     toggleSubTask={toggleSubTask}
+                    disabled={false}
                   />
                 ))}
               </View>
@@ -248,12 +279,13 @@ export default function TaskDetailsScreen() {
                   });
                 });
                 
-                // 2. Process database state alterations after the transition is fully complete (600ms)
-                setTimeout(() => {
-                  toggleStatus(task.id);
-                }, 600);
+                updateTask({
+                  id: task.id,
+                  data: { status: nextStatus }
+                });
               }}
-              className={`h-14 rounded-2xl flex-row gap-2.5 shadow-xl ${isCompleted ? 'bg-secondary border border-border/30 shadow-black/5' : 'bg-primary shadow-primary/20'}`}
+              disabled={isUpdating}
+              className={`h-14 rounded-2xl flex-row gap-2.5 shadow-xl ${isCompleted ? 'bg-secondary border border-border/30 shadow-black/5' : 'bg-primary shadow-primary/20'} ${isUpdating ? 'opacity-50' : ''}`}
             >
               <CheckCircle2 size={20} color={isCompleted ? theme.foreground : theme.primaryForeground} />
               <Text className={`font-bold text-base ${isCompleted ? 'text-foreground' : 'text-primary-foreground'}`}>
@@ -265,4 +297,6 @@ export default function TaskDetailsScreen() {
       </ScrollView>
     </View>
   );
-}
+};
+
+export default TaskDetailsScreen;

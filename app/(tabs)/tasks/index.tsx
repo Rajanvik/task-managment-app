@@ -2,125 +2,96 @@ import React, { useState } from "react";
 import { ScrollView, View, Pressable } from "react-native";
 import { Plus } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
 
-import { type Task } from "@/app/(tabs)/tasks/data/task-data";
 import { Text } from "@/components/ui/text";
-import { useTasks } from "@/context/TaskContext";
-import { toast } from "@/lib/toast";
-import { cn } from "@/lib/utils";
-import { NoTasksIllustration } from "@/components/illustrations";
+import { TaskDataHook } from "@/hooks/data-hooks/use-task";
+import { useTheme } from "@/hooks/use-theme";
+import { Task } from "@/services/tasks";
+import { AnimatedReveal } from "@/components/ui/animated-reveal";
 
 import { DeleteTaskAlert } from "./_components/delete-task-alert";
 import { TaskCard } from "./_components/task-card";
-
 import { TaskOptionsSheet } from "./_components/task-options-sheet";
-import { AnimatedReveal } from "@/components/ui/animated-reveal";
+import { CategoryFilterChips } from "./_components/category-filter-chips";
+import { TasksEmptyState } from "./_components/tasks-empty-state";
 
-function EmptyStateIllustration() {
-  const floatAnim = useSharedValue(0);
+// Filter ke possible values ka type
+type TFilter = 'All' | 'Work' | 'Personal' | 'Urgent';
 
-  React.useEffect(() => {
-    floatAnim.value = withRepeat(
-      withSequence(
-        withTiming(-8, { duration: 1800, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: 1800, easing: Easing.inOut(Easing.sin) })
-      ),
-      -1,
-      true
-    );
-  }, []);
+interface ITasksScreenProps {}
 
-  const floatStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: floatAnim.value }],
-    };
-  });
-
-  return (
-    <Animated.View style={floatStyle} className="items-center justify-center">
-      <NoTasksIllustration width={260} height={200} />
-    </Animated.View>
-  );
-}
-
-export default function TasksScreen() {
+const TasksScreen: React.FC<ITasksScreenProps> = () => {
+  // Theme colors aur navigation router
   const { theme } = useTheme();
   const router = useRouter();
-  const { tasks, deleteTask, toggleStatus } = useTasks();
 
+  // User ne kaunsa category filter select kiya — default 'All'
+  const [filter, setFilter] = useState<TFilter>('All');
+
+  // Backend se tasks fetch karo — filter 'All' ho toh sab lo, warna sirf us category ke
+  // Filter badlte hi React Query apne aap naya data fetch karta hai (queryKey me filter hai)
+  const { data: tasks = [] } = TaskDataHook.useTasksList(filter === 'All' ? undefined : filter);
+
+  // Task update karne ka function + isUpdating: jab update chal raha ho toh true
+  const { mutate: updateTask, isPending: isUpdating } = TaskDataHook.useUpdateTask();
+
+  // Task delete karne ka function + isDeleting: jab delete chal raha ho toh true
+  const { mutate: runDeleteTask, isPending: isDeleting } = TaskDataHook.useDeleteTask();
+
+  // Konsa task delete confirm ke liye select hua — null matlab koi nahi
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+
+  // Konsa task ka options sheet (3-dot menu) open hua — null matlab sheet band
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  
-  // Dynamic Category Filters
-  const [filter, setFilter] = useState<'All' | 'Work' | 'Personal' | 'Urgent'>('All');
 
-  const selectedTask = React.useMemo(() => {
-    return tasks.find((t: Task) => t.id === selectedTaskId) || null;
-  }, [tasks, selectedTaskId]);
+  // selectedTaskId string se pura Task object nikalo — tasks list me se
+  // useMemo: sirf tab recalculate karo jab tasks ya selectedTaskId change ho
+  const selectedTask = React.useMemo(() => tasks.find((t) => t.id === selectedTaskId) ?? null, [tasks, selectedTaskId]);
 
-  const { filteredTasks, totalTasks, completedTasks, pendingTasks, progressPercentage } = React.useMemo(() => {
-    const filtered = tasks.filter((t: Task) => {
-      if (filter === 'All') return true;
-      return t.category === filter;
-    });
+  // Progress stats calculate karo — total, completed, aur % done
+  // useMemo: sirf tab recalculate karo jab tasks array change ho
+  const { totalTasks, completedTasks, progressPercentage } = React.useMemo(() => {
     const total = tasks.length;
-    const completed = tasks.filter((t: Task) => t.status === "Completed").length;
-    const pending = tasks.filter((t: Task) => t.status === "Pending").length;
+    const completed = tasks.filter((t) => t.status === "Completed").length;
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
-    return {
-      filteredTasks: filtered,
-      totalTasks: total,
-      completedTasks: completed,
-      pendingTasks: pending,
-      progressPercentage: progress,
-    };
-  }, [tasks, filter]);
+    return { totalTasks: total, completedTasks: completed, progressPercentage: progress };
+  }, [tasks]);
 
-  const emptyStateContent = React.useMemo(() => {
-    switch (filter) {
-      case 'Work':
-        return {
-          title: "No Professional Tasks Scheduled",
-          description: "Your work checklist is fully accomplished. Take a quick breather, or tap below to outline your next professional milestone and keep scaling your goals."
-        };
-      case 'Personal':
-        return {
-          title: "No Personal Goals Listed",
-          description: "Your personal space is perfectly clear. Take this window of opportunity to recharge, focus on self-care, or schedule your next exciting personal passion project."
-        };
-      case 'Urgent':
-        return {
-          title: "No High-Priority Actions",
-          description: "Excellent job! All critical and time-sensitive tasks have been successfully resolved. You're fully ahead of schedule with zero critical blockers."
-        };
-      case 'All':
-      default:
-        return {
-          title: "Your Workspace is Crystal Clear",
-          description: "You've successfully completed all your scheduled goals! Celebrate this moment of peak productivity, or tap below to organize your next big achievement."
-        };
-    }
-  }, [filter]);
+  // Task checkbox tap hone par: status toggle karo aur celebration screen pe jao
+  // useCallback: stable function reference — har render pe naya function na bane
+  const handleToggleTask = React.useCallback((task: Task) => {
+    // Agar Completed hai toh Pending karo, aur agar Pending hai toh Completed karo
+    const nextStatus = task.status === "Completed" ? "Pending" : "Completed";
+
+    // Pehle celebration screen pe jao (lag-free feel ke liye — state change se pehle)
+    router.push({
+      pathname: "/celebration",
+      params: {
+        title: nextStatus === "Completed" ? "Victory! Task Completed 🥳" : "Task Re-opened 🎯",
+        description: nextStatus === "Completed"
+          ? `Fantastic job! You have successfully finished "${task.title}". Keep up the superb momentum!`
+          : `"${task.title}" has been set back to active. Let's conquer it again!`,
+        type: nextStatus === "Completed" ? "complete" : "add",
+      },
+    });
+
+    // Backend pe status update karo — React Query cache apne aap refresh karega
+    updateTask({ id: task.id, data: { status: nextStatus } });
+  }, [router, updateTask]);
 
   return (
     <View className="flex-1 bg-background">
-      {/* Background soft tint matches Home Page header area */}
+      {/* Header ke peeche hafif primary color ka tint */}
       <View className="absolute top-0 left-0 right-0 h-[280px] bg-primary/5" />
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* PREMIUM TASK HEADER SECTION */}
+        {/* HEADER — slide-down animation ke saath aata hai */}
         <AnimatedReveal variant="slide-down" delay={50} duration={400}>
           <View className="px-6 pt-14 pb-6 relative overflow-hidden">
+            {/* Decorative circle — pure visual element */}
             <View className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full" />
+
+            {/* Title + Add Task button */}
             <View className="flex-row justify-between items-start z-10">
               <View className="flex-1 mr-4">
                 <Text className="text-[34px] font-extrabold tracking-tight text-foreground">
@@ -131,7 +102,7 @@ export default function TasksScreen() {
                 </Text>
               </View>
 
-              {/* Premium action button */}
+              {/* + button: tap karo toh new task add screen pe jao */}
               <Pressable
                 onPress={() => router.push('/tasks/add' as any)}
                 className="h-11 w-11 bg-primary rounded-2xl items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.96] mt-1"
@@ -140,7 +111,7 @@ export default function TasksScreen() {
               </Pressable>
             </View>
 
-            {/* Dynamic Progress indicator bar in the header! */}
+            {/* Progress bar: kitne tasks complete hue */}
             <View className="mt-4 gap-2">
               <View className="flex-row justify-between items-center">
                 <Text className="text-muted-foreground text-xs font-bold">
@@ -151,8 +122,9 @@ export default function TasksScreen() {
                 </Text>
               </View>
               <View className="h-2 bg-secondary rounded-full overflow-hidden">
-                <View 
-                  className="h-full bg-primary rounded-full" 
+                {/* Width dynamically set hoti hai progress % se */}
+                <View
+                  className="h-full bg-primary rounded-full"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </View>
@@ -160,162 +132,74 @@ export default function TasksScreen() {
           </View>
         </AnimatedReveal>
 
-        {/* 
-          CURVED WORKSPACE LIST BODY CONTAINER:
-          Beautiful rounded sheet (-mt-2 to overlap background decorative header overlay)
-        */}
+        {/* BODY — rounded top corners ke saath header ke upar overlap karta hai */}
         <View className="px-5 py-7 rounded-t-[42px] bg-background -mt-2 flex-1 min-h-[600px] border-t border-border/10">
-          
-          {/* HORIZONTAL CATEGORY FILTER CHIPS */}
+
+          {/* Category filter chips: All / Work / Personal / Urgent */}
           <AnimatedReveal variant="slide-right" delay={150} duration={400}>
-            <View className="mb-5">
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingRight: 20 }}
-              >
-                {(['All', 'Work', 'Personal', 'Urgent'] as const).map((cat) => {
-                  const isActive = filter === cat;
-                  return (
-                    <Pressable
-                      key={cat}
-                      onPress={() => setFilter(cat)}
-                      className={cn(
-                        "px-4 py-2 rounded-2xl mr-2 border active:scale-95",
-                        isActive 
-                          ? "bg-foreground border-foreground" 
-                          : "bg-secondary/20 border-border/40"
-                      )}
-                    >
-                      <Text 
-                        className={cn(
-                          "text-xs font-extrabold",
-                          isActive ? "text-background" : "text-muted-foreground"
-                        )}
-                      >
-                        {cat}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
+            {/* active: abhi kaunsa filter selected, onChange: filter change hone par setFilter call */}
+            <CategoryFilterChips active={filter} onChange={setFilter} />
           </AnimatedReveal>
 
-          {/* DYNAMIC TASKS LIST */}
+          {/* Task list ya empty state */}
           <AnimatedReveal variant="slide-up" delay={250} duration={500}>
-            {filteredTasks.length === 0 ? (
-              <View className="items-center justify-center py-6 px-4">
-                {/* Clean, Large Floating Illustration (without background circles) */}
-                <View className="items-center justify-center mb-6">
-                  <EmptyStateIllustration />
-                </View>
-
-                {/* 2. Premium Typography */}
-                <Text className="text-[22px] font-black text-foreground text-center tracking-tight leading-7 mt-1 px-4">
-                  {emptyStateContent.title}
-                </Text>
-                <Text className="text-muted-foreground text-[14px] font-medium text-center max-w-[290px] mt-3.5 leading-5 px-2">
-                  {emptyStateContent.description}
-                </Text>
-
-                {/* 3. Dynamic Quick Add button to make it actionable! */}
-                <Pressable
-                  onPress={() => router.push('/tasks/add' as any)}
-                  className="mt-6 px-5 py-2.5 bg-secondary/50 dark:bg-secondary/10 border border-border/40 rounded-full active:scale-95 flex-row items-center gap-2"
-                >
-                  <Plus size={14} color={theme.foreground} />
-                  <Text className="text-xs font-bold text-foreground">
-                    Add first task
-                  </Text>
-                </Pressable>
-              </View>
+            {tasks.length === 0 ? (
+              // Koi task nahi — illustration + message + add button dikhao
+              <TasksEmptyState filter={filter} />
             ) : (
-              filteredTasks.map((task: Task) => (
+              // Tasks hain — har task ke liye ek TaskCard render karo
+              tasks.map((task) => (
                 <TaskCard
                   key={task.id}
                   task={task}
-                  onToggle={() => {
-                    const nextStatus = task.status === "Completed" ? "Pending" : "Completed";
-                    
-                    // 1. Immediately launch celebration (completely lag-free because state hasn't changed)
-                    router.push({
-                      pathname: "/celebration",
-                      params: {
-                        title: nextStatus === "Completed" ? "Victory! Task Completed 🥳" : "Task Re-opened 🎯",
-                        description: nextStatus === "Completed"
-                          ? `Fantastic job! You have successfully finished "${task.title}". Keep up the superb momentum!`
-                          : `"${task.title}" has been set back to active. Let's conquer it again!`,
-                        type: nextStatus === "Completed" ? "complete" : "add"
-                      }
-                    });
-                    
-                    // 2. Perform the state update in the background after the slide transition completes (600ms)
-                    setTimeout(() => {
-                      toggleStatus(task.id);
-                    }, 600);
-                  }}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/tasks/[id]" as any,
-                      params: { id: task.id },
-                    })
-                  }
-                  onOptionsPress={() => setSelectedTaskId(task.id)}
+                  onToggle={() => handleToggleTask(task)}         // Checkbox tap
+                  onOptionsPress={() => setSelectedTaskId(task.id)} // 3-dot menu tap
                 />
               ))
             )}
           </AnimatedReveal>
+
+          {/* Bottom padding — tab bar ke neeche content na chhupta rahe */}
           <View className="h-16" />
         </View>
       </ScrollView>
 
-
-
-      {/* Options sheet */}
+      {/* OPTIONS SHEET — 3-dot menu tap karne par neeche se slide hota hai */}
       <TaskOptionsSheet
-        task={selectedTask}
-        visible={!!selectedTaskId}
-        onClose={() => setSelectedTaskId(null)}
+        task={selectedTask}            // Jis task ka menu open hai uski data
+        visible={!!selectedTaskId}     // selectedTaskId ho toh sheet dikhao
+        onClose={() => setSelectedTaskId(null)}  // Sheet band karo
         onView={() => {
-          const task = selectedTask;
+          const id = selectedTaskId!;  // primitive state — cache refresh se null nahi hoga
           setSelectedTaskId(null);
-          if (task)
-            router.push({
-              pathname: "/tasks/[id]" as any,
-              params: { id: task.id },
-            });
+          router.push({ pathname: "/tasks/[id]" as any, params: { id } });
         }}
         onEdit={() => {
-          const task = selectedTask;
+          const id = selectedTaskId!;  // primitive state — cache refresh se null nahi hoga
           setSelectedTaskId(null);
-          if (task)
-            router.push({ pathname: '/tasks/edit/[id]' as any, params: { id: task.id } });
+          router.push({ pathname: '/tasks/edit/[id]' as any, params: { id } });
         }}
         onDelete={() => {
-          const id = selectedTaskId;
-          setSelectedTaskId(null);
-          setTimeout(() => setDeleteTaskId(id), 300);
+          setDeleteTaskId(selectedTaskId); // Delete confirm ke liye task ID save karo
+          setSelectedTaskId(null);         // Options sheet band karo
         }}
       />
 
-      {/* Delete Confirmation Alert */}
+      {/* DELETE CONFIRMATION ALERT — delete tap karne ke baad confirmation maango */}
       <DeleteTaskAlert
-        visible={!!deleteTaskId}
-        isDeleting={isDeleting}
-        onCancel={() => setDeleteTaskId(null)}
-        onConfirm={async () => {
+        visible={!!deleteTaskId}       // deleteTaskId ho toh alert dikhao
+        isDeleting={isDeleting}        // Delete chal raha ho toh button loading me dikhao
+        onCancel={() => setDeleteTaskId(null)}  // Cancel: alert band karo
+        onConfirm={() => {
           if (!deleteTaskId) return;
-          setIsDeleting(true);
-          await new Promise((r) => setTimeout(r, 800));
-          toast.error("Task deleted", { description: "Task removed." });
-          deleteTask(deleteTaskId);
-          setIsDeleting(false);
-          setDeleteTaskId(null);
+          runDeleteTask(deleteTaskId, {
+            onSuccess: () => setDeleteTaskId(null),
+            onError: () => setDeleteTaskId(null),
+          });
         }}
       />
-
-
     </View>
   );
-}
+};
+
+export default TasksScreen;

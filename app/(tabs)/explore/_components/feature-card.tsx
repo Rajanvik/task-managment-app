@@ -9,7 +9,7 @@ interface FeatureCardProps {
   icon: string;
 }
 
-export function FeatureCard({ title, description, icon }: FeatureCardProps) {
+export const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon }) => {
   return (
     <Card className="border-none bg-card rounded-[32px] p-2 shadow-sm shadow-black/5 overflow-hidden gap-0">
       <CardHeader className="gap-0 py-3.5 px-4">

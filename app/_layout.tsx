@@ -14,10 +14,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
 (global as any).useTheme = useTheme;
 import { NAV_THEME } from '@/lib/theme';
-import { TaskProvider, useTasks } from '@/context/TaskContext';
 import { Toaster } from '@/components/ui/toaster';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+
+import { QueryClientProvider } from '@/providers/query-client-provider';
 
 // Ignore generic third-party Expo SDK push notification library notice on Expo Go
 LogBox.ignoreLogs([
@@ -31,43 +32,25 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
+import { useRouteGuard } from '@/hooks/use-route-guard';
+
 function RootLayoutContent() {
   const { colorScheme } = useColorScheme();
-  const { isLoaded } = useTasks();
+
+  // Activate route guarding middleware immediately
+  useRouteGuard(true);
 
   useEffect(() => {
-    let isMounted = true;
-    
-    if (isLoaded) {
-      const hideSplash = async () => {
-        try {
-          await SplashScreen.hideAsync();
-        } catch (e) {
-          console.warn("Error hiding splash screen:", e);
-        }
-      };
+    const hideSplash = async () => {
+      try {
+        await SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn("Error hiding splash screen:", e);
+      }
+    };
 
-      // Hide splash screen once TaskProvider storage retrieval is completely loaded
-      hideSplash();
-
-      // Safety fallback: ensure splash hides even if mounting gets delayed or interrupted
-      const fallbackTimer = setTimeout(() => {
-        if (isMounted) {
-          hideSplash();
-        }
-      }, 500);
-
-      return () => {
-        isMounted = false;
-        clearTimeout(fallbackTimer);
-      };
-    }
-  }, [isLoaded]);
-
-  // Return null (which keeps the Native Splash Screen active) until all data is loaded
-  if (!isLoaded) {
-    return null;
-  }
+    hideSplash();
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light}>
@@ -75,6 +58,13 @@ function RootLayoutContent() {
         <Stack>
           <Stack.Screen 
             name="index" 
+            options={{ 
+              headerShown: false, 
+              animation: 'fade' 
+            }} 
+          />
+          <Stack.Screen 
+            name="(auth)" 
             options={{ 
               headerShown: false, 
               animation: 'fade' 
@@ -107,9 +97,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <TaskProvider>
+        <QueryClientProvider>
           <RootLayoutContent />
-        </TaskProvider>
+        </QueryClientProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );

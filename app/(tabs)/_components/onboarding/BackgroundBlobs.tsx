@@ -3,7 +3,9 @@ import { View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export function BackgroundBlobs() {
+interface IBackgroundBlobsProps {}
+
+export const BackgroundBlobs: React.FC<IBackgroundBlobsProps> = () => {
   const { colorScheme } = useColorScheme();
 
   return (

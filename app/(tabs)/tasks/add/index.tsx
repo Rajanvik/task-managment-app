@@ -18,60 +18,62 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 
 // State, schemas, and types
-import { useTasks } from '@/context/TaskContext';
-import { formatLocalDate } from '@/lib/date';
-import { createTaskSchema, CreateTaskFormValues } from '@/lib/zod/tasks/create';
-import { type SubTask } from '@/app/(tabs)/tasks/data/task-data';
-
+import { TaskDataHook } from '@/hooks/data-hooks/use-task';
+import { useTheme } from '@/hooks/use-theme';
+import { parseLocalDate, formatLocalDate } from '@/lib/date';
+import { ZCreateTask, TCreateTask } from '@/lib/zod/tasks';   // index.ts se
 
 // ──────────────────────────────────────────
 // Add Task Screen — BottomSheet modal route
 // ──────────────────────────────────────────
-export default function AddTaskScreen() {
+interface IAddTaskScreenProps {}
+
+const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
-  const { addTask } = useTasks();
 
   const [triggerWidth, setTriggerWidth] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [dueDate, setDueDate] = useState<Date>(new Date());
   const [newStepText, setNewStepText] = useState('');
-  const [formSteps, setFormSteps] = useState<SubTask[]>([]);
+  const [formSteps, setFormSteps] = useState<Array<{ id: string; title: string; completed: boolean }>>([]);
 
-  const form = useForm<CreateTaskFormValues>({
-    resolver: zodResolver(createTaskSchema),
-    defaultValues: { title: '', description: '', category: 'Work' },
+  // dueDate bhi form ke andar — example pattern jaisa
+  const form = useForm<TCreateTask>({
+    resolver: zodResolver(ZCreateTask),
+    defaultValues: {
+      title: '',
+      description: '',
+      category: 'Work' as any,
+      dueDate: formatLocalDate(new Date()),
+    },
   });
 
-  const handleFormSubmit = async (data: CreateTaskFormValues) => {
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-
-    router.back();
-
-    router.push({
-      pathname: '/celebration',
-      params: {
-        title: 'Task Successfully Created',
-        description: `"${data.title}" has been added to your checklist. Let's make progress!`,
-        type: 'add',
-      },
-    });
-
-    setTimeout(() => {
-      addTask({
-        title: data.title,
-        description: data.description || '',
-        category: data.category as any,
-        dueDate: formatLocalDate(dueDate),
-        steps: formSteps,
+  const { mutate: createTask, isPending: isLoading } = TaskDataHook.useCreateTask({
+    onSuccess: (_, variables) => {
+      form.reset();
+      setFormSteps([]);
+      router.back();
+      router.push({
+        pathname: '/celebration',
+        params: {
+          title: 'Task Successfully Created',
+          description: `"${variables.title}" has been added to your checklist. Let's make progress!`,
+          type: 'add',
+        },
       });
-    }, 600);
+    },
+  });
 
-    setIsLoading(false);
-  };
+  function onSubmit(values: TCreateTask) {
+    createTask({
+      title: values.title,
+      description: values.description || '',
+      category: values.category as any,
+      dueDate: values.dueDate,
+      steps: formSteps.map((s) => ({ title: s.title, completed: false })),
+    });
+  }
 
   const handleAddStep = () => {
     if (!newStepText.trim()) return;
@@ -114,32 +116,46 @@ export default function AddTaskScreen() {
             )}
           />
 
-          {/* Due Date */}
-          <View className="gap-2 relative z-30">
-            <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Due Date</FormLabel>
-            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-11 border border-border/40 bg-secondary/20 rounded-xl px-4 flex-row items-center justify-between"
-                  disabled={isLoading}
-                >
-                  <Text className="text-foreground text-sm font-semibold">
-                    {dueDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                  </Text>
-                  <Text className="text-muted-foreground text-xs">📅</Text>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 border-none bg-transparent">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={(date) => { setDueDate(date ?? new Date()); setIsCalendarOpen(false); }}
-                  className="border border-border/45 shadow-2xl"
-                />
-              </PopoverContent>
-            </Popover>
-          </View>
+          {/* Due Date — form field ke andar, example pattern jaisa */}
+          <FormField
+            control={form.control}
+            name="dueDate"
+            render={({ field }) => (
+              <FormItem className="gap-2 relative z-30">
+                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Due Date</FormLabel>
+                <FormControl>
+                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="h-11 border border-border/40 bg-secondary/20 rounded-xl px-4 flex-row items-center justify-between"
+                        disabled={isLoading}
+                      >
+                        <Text className="text-foreground text-sm font-semibold">
+                          {field.value
+                            ? parseLocalDate(field.value).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                            : 'Pick a date'}
+                        </Text>
+                        <Text className="text-muted-foreground text-xs">📅</Text>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 border-none bg-transparent">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? parseLocalDate(field.value) : undefined}
+                        onSelect={(date) => {
+                          field.onChange(date ? formatLocalDate(date) : field.value);
+                          setIsCalendarOpen(false);
+                        }}
+                        className="border border-border/45 shadow-2xl"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Notes */}
           <FormField
@@ -174,7 +190,7 @@ export default function AddTaskScreen() {
               <FormItem onLayout={(e) => setTriggerWidth(e.nativeEvent.layout.width)} className="z-10">
                 <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Priority</FormLabel>
                 <Select
-                  value={{ value: field.value.toLowerCase(), label: field.value }}
+                  value={{ value: field.value?.toLowerCase() ?? 'work', label: field.value ?? 'Work' }}
                   onValueChange={(val) => field.onChange(val?.label || 'Work')}
                   disabled={isLoading}
                 >
@@ -250,12 +266,10 @@ export default function AddTaskScreen() {
             >
               <Text className="font-bold text-foreground text-sm">Dismiss</Text>
             </Button>
+            {/* Example pattern: form.handleSubmit(onSubmit) seedha */}
             <Button
               className="flex-[2] h-11 rounded-xl shadow-lg shadow-primary/20 flex-row items-center justify-center gap-2"
-              onPress={async () => {
-                const isValid = await form.trigger();
-                if (isValid) form.handleSubmit(handleFormSubmit)();
-              }}
+              onPress={form.handleSubmit(onSubmit)}
               disabled={isLoading}
             >
               {isLoading && <Spinner size={16} color={theme.primaryForeground} />}
@@ -267,4 +281,6 @@ export default function AddTaskScreen() {
       </Form>
     </BottomSheet>
   );
-}
+};
+
+export default AddTaskScreen;

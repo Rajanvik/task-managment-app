@@ -140,6 +140,25 @@ function AlertDialogCancel({
   );
 }
 
+function AlertDialogMedia({ className, ...props }: ViewProps) {
+  const textClasses = className
+    ?.split(' ')
+    .filter((c) => c.includes('text-'))
+    .join(' ');
+
+  return (
+    <TextClassContext.Provider value={textClasses}>
+      <View
+        className={cn(
+          'mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-muted self-center',
+          className
+        )}
+        {...props}
+      />
+    </TextClassContext.Provider>
+  );
+}
+
 export {
   AlertDialog,
   AlertDialogAction,
@@ -152,4 +171,6 @@ export {
   AlertDialogPortal,
   AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogMedia,
 };
+

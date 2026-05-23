@@ -2,46 +2,30 @@ import React from "react";
 import { Pressable, View } from "react-native";
 import { CheckCircle2, Circle, MoreVertical, Calendar, ListTodo } from "lucide-react-native";
 
-import { type Task } from "@/app/(tabs)/tasks/data/task-data";
+import { type Task } from "@/services/tasks";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/use-theme";
+import { parseLocalDate } from "@/lib/date";
 
 interface TaskCardProps {
   task: Task;
   onToggle: () => void;
-  onPress: () => void;
   onOptionsPress: () => void;
+  disabled?: boolean;
 }
 
-export function TaskCard({
+export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   onToggle,
-  onPress,
   onOptionsPress,
-}: TaskCardProps) {
+  disabled,
+}) => {
   const { theme } = useTheme();
 
-  // Local state for instantaneous visual feedback when tapping the checkbox (0ms delay)
-  const [localCompleted, setLocalCompleted] = React.useState(task.status === "Completed");
-
-  // Keep local status state synchronized with structural prop updates
-  React.useEffect(() => {
-    setLocalCompleted(task.status === "Completed");
-  }, [task.status]);
-
-  const handleToggle = () => {
-    // 1. Instantly update the check icon visually in the exact same frame (0ms UI lag!)
-    setLocalCompleted(!localCompleted);
-    
-    // 2. Schedule the navigation push in the very next animation paint frame.
-    // This allows the check icon to render with 100% thread priority instantly,
-    // and then launches the transition with zero collision stutters!
-    requestAnimationFrame(() => {
-      onToggle();
-    });
-  };
+  const isCompleted = task.status === "Completed";
 
   // Calculate dynamic subtask steps progress
   const hasSteps = task.steps && task.steps.length > 0;
@@ -62,8 +46,8 @@ export function TaskCard({
           <View className="flex-row items-start flex-1 gap-2.5">
             
             {/* Task Completion Checkbox (Instant local tick feedback) */}
-            <Pressable onPress={handleToggle} className="p-0.5 mt-0.5">
-              {localCompleted ? (
+            <Pressable onPress={onToggle} disabled={disabled} className={`p-0.5 mt-0.5 ${disabled ? 'opacity-50' : ''}`}>
+              {isCompleted ? (
                 <CheckCircle2 size={21} color={theme.primary} />
               ) : (
                 <Circle size={21} color="gray" />
@@ -75,7 +59,7 @@ export function TaskCard({
               <Text
                 className={cn(
                   "text-[17px] font-extrabold leading-tight",
-                  localCompleted ? "text-muted-foreground line-through opacity-60" : "text-foreground"
+                  isCompleted ? "text-muted-foreground line-through opacity-60" : "text-foreground"
                 )}
               >
                 {task.title}
@@ -86,7 +70,7 @@ export function TaskCard({
                   numberOfLines={1}
                   className={cn(
                     "text-xs mt-0.5",
-                    localCompleted ? "text-muted-foreground/60" : "text-muted-foreground"
+                    isCompleted ? "text-muted-foreground/60" : "text-muted-foreground"
                   )}
                 >
                   {task.description}
@@ -99,6 +83,7 @@ export function TaskCard({
           <Button
             variant="ghost"
             size="icon"
+            disabled={disabled}
             className="h-8 w-8 rounded-full -mr-1.5 -mt-1 active:bg-secondary/30"
             onPress={onOptionsPress}
           >
@@ -136,7 +121,11 @@ export function TaskCard({
           {/* 2. Due Date Pill */}
           <View className="bg-secondary/25 border border-border/30 px-2 py-0.5 rounded-lg flex-row items-center gap-1">
             <Calendar size={11} color="gray" />
-            <Text className="text-[11px] text-muted-foreground font-bold">{task.dueDate}</Text>
+            <Text className="text-[11px] text-muted-foreground font-bold">
+              {task.dueDate
+                ? parseLocalDate(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : 'Flexible'}
+            </Text>
           </View>
 
           {/* 3. Steps Checklist Progress Pill */}

@@ -22,7 +22,7 @@ interface OnboardingSlideProps {
   screenWidth: number;
 }
 
-export function OnboardingSlide({ slide, isActive, screenWidth }: OnboardingSlideProps) {
+export const OnboardingSlide: React.FC<OnboardingSlideProps> = ({ slide, isActive, screenWidth }) => {
   const { Illustration } = slide;
   const { height: screenHeight } = useWindowDimensions();
 

@@ -3,7 +3,9 @@ import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Sunrise, Sun, Sunset, Moon, Clock, Calendar } from 'lucide-react-native';
 
-export function RealTimeClock() {
+interface IRealTimeClockProps {}
+
+export const RealTimeClock: React.FC<IRealTimeClockProps> = () => {
   const [time, setTime] = useState(new Date());
   const { theme } = useTheme();
 

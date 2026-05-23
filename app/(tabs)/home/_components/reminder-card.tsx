@@ -4,25 +4,26 @@ import {
   Clock,
   CheckCircle2,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
-import { useTasks } from "@/context/TaskContext";
+import { TaskDataHook } from "@/hooks/data-hooks/use-task";
+import { useTheme } from "@/hooks/use-theme";
 import {
   cancelAllReminders,
   registerForNotificationsAsync,
   scheduleDailyPendingReminder,
   triggerImmediateReminder,
 } from "@/lib/notifications";
-import type { Task } from "@/app/(tabs)/tasks/data/task-data";
+import type { Task } from "@/services/tasks";
 import { toast } from "@/lib/toast";
 
 export function ReminderCard() {
   const { theme } = useTheme();
-  const { tasks } = useTasks();
+  const { data: tasks = [] } = TaskDataHook.useTasksList();
 
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,10 +32,6 @@ export function ReminderCard() {
   const pendingCount = pendingTasks.length;
   const pendingTitles = pendingTasks.map((t: Task) => t.title);
 
-  // Initialize permissions check
-  useEffect(() => {
-    // We can check if permission is already granted, but we don't block
-  }, []);
 
   const handleTestReminder = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
