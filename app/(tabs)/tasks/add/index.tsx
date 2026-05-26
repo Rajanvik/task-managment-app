@@ -1,27 +1,45 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plus, X } from 'lucide-react-native';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { Plus, X } from "lucide-react-native";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // UI primitives
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Text } from '@/components/ui/text';
-import { Spinner } from '@/components/ui/spinner';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
 
 // State, schemas, and types
-import { TaskDataHook } from '@/hooks/data-hooks/use-task';
-import { useTheme } from '@/hooks/use-theme';
-import { parseLocalDate, formatLocalDate } from '@/lib/date';
-import { ZCreateTask, TCreateTask } from '@/lib/zod/tasks';   // index.ts se
+import { useTheme } from "@/hooks/use-theme";
+import { TaskDataHook } from "@/lib/data-hooks/tasks";
+import { formatLocalDate, parseLocalDate } from "@/lib/date";
+import { TCreateTask, ZCreateTask } from "@/lib/zod/tasks"; // index.ts se
 
 // ──────────────────────────────────────────
 // Add Task Screen — BottomSheet modal route
@@ -35,40 +53,43 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [newStepText, setNewStepText] = useState('');
-  const [formSteps, setFormSteps] = useState<Array<{ id: string; title: string; completed: boolean }>>([]);
+  const [newStepText, setNewStepText] = useState("");
+  const [formSteps, setFormSteps] = useState<
+    Array<{ id: string; title: string; completed: boolean }>
+  >([]);
 
   // dueDate bhi form ke andar — example pattern jaisa
   const form = useForm<TCreateTask>({
     resolver: zodResolver(ZCreateTask),
     defaultValues: {
-      title: '',
-      description: '',
-      category: 'Work' as any,
+      title: "",
+      description: "",
+      category: "Work" as any,
       dueDate: formatLocalDate(new Date()),
     },
   });
 
-  const { mutate: createTask, isPending: isLoading } = TaskDataHook.useCreateTask({
-    onSuccess: (_, variables) => {
-      form.reset();
-      setFormSteps([]);
-      router.back();
-      router.push({
-        pathname: '/celebration',
-        params: {
-          title: 'Task Successfully Created',
-          description: `"${variables.title}" has been added to your checklist. Let's make progress!`,
-          type: 'add',
-        },
-      });
-    },
-  });
+  const { mutate: createTask, isPending: isLoading } =
+    TaskDataHook.useCreateTask({
+      onSuccess: (_, variables) => {
+        form.reset();
+        setFormSteps([]);
+        router.back();
+        router.push({
+          pathname: "/celebration",
+          params: {
+            title: "Task Successfully Created",
+            description: `"${variables.title}" has been added to your checklist. Let's make progress!`,
+            type: "add",
+          },
+        });
+      },
+    });
 
   function onSubmit(values: TCreateTask) {
     createTask({
       title: values.title,
-      description: values.description || '',
+      description: values.description || "",
       category: values.category as any,
       dueDate: values.dueDate,
       steps: formSteps.map((s) => ({ title: s.title, completed: false })),
@@ -79,9 +100,13 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
     if (!newStepText.trim()) return;
     setFormSteps((prev) => [
       ...prev,
-      { id: Date.now().toString(), title: newStepText.trim(), completed: false },
+      {
+        id: Date.now().toString(),
+        title: newStepText.trim(),
+        completed: false,
+      },
     ]);
-    setNewStepText('');
+    setNewStepText("");
   };
 
   return (
@@ -93,14 +118,15 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
     >
       <Form {...form}>
         <View className="gap-4 py-1">
-
           {/* Task Title */}
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Task Title</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">
+                  Task Title
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="e.g. Design meeting"
@@ -122,9 +148,14 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
             name="dueDate"
             render={({ field }) => (
               <FormItem className="gap-2 relative z-30">
-                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Due Date</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">
+                  Due Date
+                </FormLabel>
                 <FormControl>
-                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -133,18 +164,31 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
                       >
                         <Text className="text-foreground text-sm font-semibold">
                           {field.value
-                            ? parseLocalDate(field.value).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-                            : 'Pick a date'}
+                            ? parseLocalDate(field.value).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "long",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )
+                            : "Pick a date"}
                         </Text>
-                        <Text className="text-muted-foreground text-xs">📅</Text>
+                        <Text className="text-muted-foreground text-xs">
+                          📅
+                        </Text>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 border-none bg-transparent">
                       <Calendar
                         mode="single"
-                        selected={field.value ? parseLocalDate(field.value) : undefined}
+                        selected={
+                          field.value ? parseLocalDate(field.value) : undefined
+                        }
                         onSelect={(date) => {
-                          field.onChange(date ? formatLocalDate(date) : field.value);
+                          field.onChange(
+                            date ? formatLocalDate(date) : field.value,
+                          );
                           setIsCalendarOpen(false);
                         }}
                         className="border border-border/45 shadow-2xl"
@@ -163,11 +207,13 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
             name="description"
             render={({ field }) => (
               <FormItem className="z-10">
-                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Notes</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">
+                  Notes
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Details..."
-                    value={field.value || ''}
+                    value={field.value || ""}
                     onChangeText={field.onChange}
                     onBlur={field.onBlur}
                     editable={!isLoading}
@@ -187,29 +233,53 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
             control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem onLayout={(e) => setTriggerWidth(e.nativeEvent.layout.width)} className="z-10">
-                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">Priority</FormLabel>
+              <FormItem
+                onLayout={(e) => setTriggerWidth(e.nativeEvent.layout.width)}
+                className="z-10"
+              >
+                <FormLabel className="text-sm font-bold text-foreground/70 ml-1">
+                  Priority
+                </FormLabel>
                 <Select
-                  value={{ value: field.value?.toLowerCase() ?? 'work', label: field.value ?? 'Work' }}
-                  onValueChange={(val) => field.onChange(val?.label || 'Work')}
+                  value={{
+                    value: field.value?.toLowerCase() ?? "work",
+                    label: field.value ?? "Work",
+                  }}
+                  onValueChange={(val) => field.onChange(val?.label || "Work")}
                   disabled={isLoading}
                 >
                   <FormControl>
                     <SelectTrigger className="h-11 border-none bg-secondary/20 rounded-xl px-4">
-                      <SelectValue className="text-foreground text-sm" placeholder="Select Priority" />
+                      <SelectValue
+                        className="text-foreground text-sm"
+                        placeholder="Select Priority"
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent
                     side="top"
                     portalHost="bottom-sheet"
-                    insets={{ top: insets.top, bottom: insets.bottom, left: 12, right: 12 }}
+                    insets={{
+                      top: insets.top,
+                      bottom: insets.bottom,
+                      left: 12,
+                      right: 12,
+                    }}
                     className="rounded-xl border-none shadow-xl"
                     style={triggerWidth ? { width: triggerWidth } : undefined}
                   >
                     <SelectGroup>
                       <SelectItem label="Work" value="work" className="h-10" />
-                      <SelectItem label="Personal" value="personal" className="h-10" />
-                      <SelectItem label="Urgent" value="urgent" className="h-10" />
+                      <SelectItem
+                        label="Personal"
+                        value="personal"
+                        className="h-10"
+                      />
+                      <SelectItem
+                        label="Urgent"
+                        value="urgent"
+                        className="h-10"
+                      />
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -220,7 +290,9 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
 
           {/* Execution Steps */}
           <View className="gap-2 z-10">
-            <Text className="text-sm font-bold text-foreground/70 ml-1">Execution Steps</Text>
+            <Text className="text-sm font-bold text-foreground/70 ml-1">
+              Execution Steps
+            </Text>
             <View className="flex-row gap-2">
               <Input
                 placeholder="Add step..."
@@ -240,12 +312,21 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
             {formSteps.length > 0 && (
               <View className="bg-secondary/10 border border-border/20 rounded-xl p-3 gap-2 mt-1">
                 {formSteps.map((step) => (
-                  <View key={step.id} className="flex-row items-center justify-between py-1 px-1">
-                    <Text className="text-foreground text-sm flex-1 mr-2 font-medium">{step.title}</Text>
+                  <View
+                    key={step.id}
+                    className="flex-row items-center justify-between py-1 px-1"
+                  >
+                    <Text className="text-foreground text-sm flex-1 mr-2 font-medium">
+                      {step.title}
+                    </Text>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onPress={() => setFormSteps((prev) => prev.filter((s) => s.id !== step.id))}
+                      onPress={() =>
+                        setFormSteps((prev) =>
+                          prev.filter((s) => s.id !== step.id),
+                        )
+                      }
                       className="h-6 w-6 rounded-full bg-destructive/10 border border-destructive/10 items-center justify-center"
                     >
                       <X size={11} color="#ef4444" />
@@ -272,11 +353,14 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
               onPress={form.handleSubmit(onSubmit)}
               disabled={isLoading}
             >
-              {isLoading && <Spinner size={16} color={theme.primaryForeground} />}
-              <Text className="font-bold text-base text-primary-foreground">Add Task</Text>
+              {isLoading && (
+                <Spinner size={16} color={theme.primaryForeground} />
+              )}
+              <Text className="font-bold text-base text-primary-foreground">
+                Add Task
+              </Text>
             </Button>
           </View>
-
         </View>
       </Form>
     </BottomSheet>

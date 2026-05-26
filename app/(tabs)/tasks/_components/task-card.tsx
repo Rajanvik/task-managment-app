@@ -1,14 +1,20 @@
+import {
+  Calendar,
+  CheckCircle2,
+  Circle,
+  ListTodo,
+  MoreVertical,
+} from "lucide-react-native";
 import React from "react";
 import { Pressable, View } from "react-native";
-import { CheckCircle2, Circle, MoreVertical, Calendar, ListTodo } from "lucide-react-native";
 
-import { type Task } from "@/services/tasks";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/use-theme";
 import { parseLocalDate } from "@/lib/date";
+import { cn } from "@/lib/utils";
+import { type Task } from "@/lib/types/tasks";
 
 interface TaskCardProps {
   task: Task;
@@ -29,7 +35,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   // Calculate dynamic subtask steps progress
   const hasSteps = task.steps && task.steps.length > 0;
-  const completedSteps = hasSteps ? task.steps!.filter((s) => s.completed).length : 0;
+  const completedSteps = hasSteps
+    ? task.steps!.filter((s) => s.completed).length
+    : 0;
   const totalSteps = hasSteps ? task.steps!.length : 0;
 
   return (
@@ -38,15 +46,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         REMOVED outer card-click navigation handler as requested! 
         Clicking the card itself now remains static and doesn't take the user to details.
       */}
-      <Card
-        className="bg-card border border-border/40 rounded-3xl px-3.5 pt-3.5 pb-2.5 shadow-sm shadow-black/5"
-      >
+      <Card className="bg-card border border-border/40 rounded-3xl px-3.5 pt-3.5 pb-2.5 shadow-sm shadow-black/5">
         {/* Top Main Section with Tightened Row Spacing */}
         <View className="flex-row items-start justify-between">
           <View className="flex-row items-start flex-1 gap-2.5">
-            
             {/* Task Completion Checkbox (Instant local tick feedback) */}
-            <Pressable onPress={onToggle} disabled={disabled} className={`p-0.5 mt-0.5 ${disabled ? 'opacity-50' : ''}`}>
+            <Pressable
+              onPress={onToggle}
+              disabled={disabled}
+              className={`p-0.5 mt-0.5 ${disabled ? "opacity-50" : ""}`}
+            >
               {isCompleted ? (
                 <CheckCircle2 size={21} color={theme.primary} />
               ) : (
@@ -59,18 +68,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               <Text
                 className={cn(
                   "text-[17px] font-extrabold leading-tight",
-                  isCompleted ? "text-muted-foreground line-through opacity-60" : "text-foreground"
+                  isCompleted
+                    ? "text-muted-foreground line-through opacity-60"
+                    : "text-foreground",
                 )}
               >
                 {task.title}
               </Text>
-              
+
               {task.description ? (
                 <Text
                   numberOfLines={1}
                   className={cn(
                     "text-xs mt-0.5",
-                    isCompleted ? "text-muted-foreground/60" : "text-muted-foreground"
+                    isCompleted
+                      ? "text-muted-foreground/60"
+                      : "text-muted-foreground",
                   )}
                 >
                   {task.description}
@@ -96,25 +109,30 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           Applied marginTop: -14 and reduced padding to achieve the absolute tightest layout possible.
           This pulls the divider and pills cleanly and snugly immediately under the text baseline!
         */}
-        <View 
+        <View
           className="flex-row flex-wrap gap-1.5 border-t border-border/10"
           style={{ marginTop: -14, paddingTop: 8 }}
         >
-          
           {/* 1. Priority Indicator Pill */}
           {task.category === "Urgent" && (
             <View className="bg-destructive/10 border border-destructive/20 px-2 py-0.5 rounded-lg">
-              <Text className="text-[11px] font-extrabold text-destructive">Urgent</Text>
+              <Text className="text-[11px] font-extrabold text-destructive">
+                Urgent
+              </Text>
             </View>
           )}
           {task.category === "Work" && (
             <View className="bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-lg">
-              <Text className="text-[11px] font-extrabold text-primary">Work</Text>
+              <Text className="text-[11px] font-extrabold text-primary">
+                Work
+              </Text>
             </View>
           )}
           {task.category === "Personal" && (
             <View className="bg-secondary/30 border border-border/40 px-2 py-0.5 rounded-lg">
-              <Text className="text-[11px] font-extrabold text-foreground">Personal</Text>
+              <Text className="text-[11px] font-extrabold text-foreground">
+                Personal
+              </Text>
             </View>
           )}
 
@@ -123,8 +141,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <Calendar size={11} color="gray" />
             <Text className="text-[11px] text-muted-foreground font-bold">
               {task.dueDate
-                ? parseLocalDate(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                : 'Flexible'}
+                ? parseLocalDate(task.dueDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "Flexible"}
             </Text>
           </View>
 
@@ -137,9 +159,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               </Text>
             </View>
           )}
-
         </View>
       </Card>
     </View>
   );
-}
+};

@@ -1,18 +1,30 @@
-import React from 'react';
-import { View, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { AuthDataHook } from '@/hooks/data-hooks/use-auth';
-import { User, Mail, Lock, UserPlus } from 'lucide-react-native';
-import { toast } from '@/lib/toast';
-import { Icon } from '@/components/ui/icon';
+import { Icon } from "@/components/ui/icon";
+import { AuthDataHook } from "@/lib/data-hooks/auth";
+import { useRouter } from "expo-router";
+import { Lock, Mail, User, UserPlus } from "lucide-react-native";
+import React from "react";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Text } from '@/components/ui/text';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ZRegister, TRegister } from '@/lib/zod/user/register';
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { TRegister, ZRegister } from "@/lib/zod/user/register";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface IRegisterScreenProps {}
 
@@ -22,10 +34,10 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
   const form = useForm<TRegister>({
     resolver: zodResolver(ZRegister),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -33,30 +45,35 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
   const { mutate, isPending } = AuthDataHook.useRegister({
     // 👉 onSuccess: Jab account register ho jayega
     onSuccess: () => {
-      router.replace('/login'); // 1. Login screen page par navigate karo
+      router.replace("/login"); // 1. Login screen page par navigate karo
       form.reset(); // 2. Form fields clear/reset karo
     },
   });
 
   // confirmPassword sirf frontend validation ke liye — backend ko nahi bhejte
   function onSubmit(values: TRegister) {
-    mutate({ name: values.name, email: values.email, password: values.password });
+    mutate({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    });
   }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-background"
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
         <View className="flex-1 justify-center px-8 py-10">
-          
           {/* Header section */}
           <View className="mb-10 items-center">
             <View className="p-4 bg-primary/10 rounded-full mb-4">
               <Icon as={UserPlus} size={40} className="text-foreground" />
             </View>
-            <Text className="text-3xl font-bold text-foreground text-center">Create Account</Text>
+            <Text className="text-3xl font-bold text-foreground text-center">
+              Create Account
+            </Text>
             <Text className="text-sm text-muted-foreground text-center mt-2">
               Join us to track priorities and stay organized
             </Text>
@@ -64,9 +81,7 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
 
           {/* Form container */}
           <View className="space-y-4">
-            
             <Form {...form}>
-              
               {/* Name Field */}
               <FormField
                 control={form.control}
@@ -76,7 +91,11 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
                       <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon as={User} size={18} className="text-muted-foreground mr-3" />
+                        <Icon
+                          as={User}
+                          size={18}
+                          className="text-muted-foreground mr-3"
+                        />
                         <Input
                           placeholder="John Doe"
                           value={value}
@@ -101,7 +120,11 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon as={Mail} size={18} className="text-muted-foreground mr-3" />
+                        <Icon
+                          as={Mail}
+                          size={18}
+                          className="text-muted-foreground mr-3"
+                        />
                         <Input
                           placeholder="name@example.com"
                           value={value}
@@ -127,7 +150,11 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon as={Lock} size={18} className="text-muted-foreground mr-3" />
+                        <Icon
+                          as={Lock}
+                          size={18}
+                          className="text-muted-foreground mr-3"
+                        />
                         <Input
                           placeholder="At least 6 characters"
                           value={value}
@@ -153,7 +180,11 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
                       <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon as={Lock} size={18} className="text-muted-foreground mr-3" />
+                        <Icon
+                          as={Lock}
+                          size={18}
+                          className="text-muted-foreground mr-3"
+                        />
                         <Input
                           placeholder="Re-enter your password"
                           value={value}
@@ -180,8 +211,14 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <View className="flex-row items-center gap-2">
-                    <Text className="text-primary-foreground font-bold text-base">Register</Text>
-                    <Icon as={UserPlus} size={18} className="text-primary-foreground" />
+                    <Text className="text-primary-foreground font-bold text-base">
+                      Register
+                    </Text>
+                    <Icon
+                      as={UserPlus}
+                      size={18}
+                      className="text-primary-foreground"
+                    />
                   </View>
                 )}
               </Button>
@@ -189,16 +226,17 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
 
             {/* Navigate to Login */}
             <View className="flex-row justify-center mt-6">
-              <Text className="text-sm text-muted-foreground">Already have an account? </Text>
+              <Text className="text-sm text-muted-foreground">
+                Already have an account?{" "}
+              </Text>
               <Button
                 variant="link"
                 className="p-0 h-auto"
-                onPress={() => router.push('/login')}
+                onPress={() => router.push("/login")}
               >
                 <Text className="text-sm text-primary font-bold">Login</Text>
               </Button>
             </View>
-
           </View>
         </View>
       </ScrollView>

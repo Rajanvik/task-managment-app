@@ -1,10 +1,10 @@
+import { Eye, Pencil, Trash2 } from "lucide-react-native";
 import React from "react";
 import { Pressable, View } from "react-native";
-import { Eye, Pencil, Trash2 } from "lucide-react-native";
 
-import { type Task } from "@/services/tasks";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Text } from "@/components/ui/text";
+import { type Task } from "@/lib/types/tasks";
 
 interface TaskOptionsSheetProps {
   task: Task | null;
@@ -36,7 +36,6 @@ export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
     >
       {/* 3-Column Compact Grid with Individual Icon Backgrounds */}
       <View className="flex-row w-full gap-2.5 pb-2 pt-1">
-        
         {/* COLUMN 1: VIEW */}
         <Pressable
           onPress={onView}
@@ -69,8 +68,7 @@ export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
           </View>
           <Text className="text-xs font-bold text-destructive">Delete</Text>
         </Pressable>
-
       </View>
     </BottomSheet>
   );
-}
+};

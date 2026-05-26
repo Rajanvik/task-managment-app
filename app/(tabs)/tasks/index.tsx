@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { ScrollView, View, Pressable } from "react-native";
-import { Plus } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { Plus } from "lucide-react-native";
+import React, { useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { Text } from "@/components/ui/text";
-import { TaskDataHook } from "@/hooks/data-hooks/use-task";
-import { useTheme } from "@/hooks/use-theme";
-import { Task } from "@/services/tasks";
 import { AnimatedReveal } from "@/components/ui/animated-reveal";
+import { Text } from "@/components/ui/text";
+import { useTheme } from "@/hooks/use-theme";
+import { TaskDataHook } from "@/lib/data-hooks/tasks";
+import { Task } from "@/lib/types/tasks";
 
+import { CategoryFilterChips } from "./_components/category-filter-chips";
 import { DeleteTaskAlert } from "./_components/delete-task-alert";
 import { TaskCard } from "./_components/task-card";
 import { TaskOptionsSheet } from "./_components/task-options-sheet";
-import { CategoryFilterChips } from "./_components/category-filter-chips";
 import { TasksEmptyState } from "./_components/tasks-empty-state";
 
 // Filter ke possible values ka type
-type TFilter = 'All' | 'Work' | 'Personal' | 'Urgent';
+type TFilter = "All" | "Work" | "Personal" | "Urgent";
 
 interface ITasksScreenProps {}
 
@@ -26,17 +26,21 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
   const router = useRouter();
 
   // User ne kaunsa category filter select kiya — default 'All'
-  const [filter, setFilter] = useState<TFilter>('All');
+  const [filter, setFilter] = useState<TFilter>("All");
 
   // Backend se tasks fetch karo — filter 'All' ho toh sab lo, warna sirf us category ke
   // Filter badlte hi React Query apne aap naya data fetch karta hai (queryKey me filter hai)
-  const { data: tasks = [] } = TaskDataHook.useTasksList(filter === 'All' ? undefined : filter);
+  const { data: tasks = [] } = TaskDataHook.useGetTasks({
+    category: filter === "All" ? undefined : filter,
+  });
 
   // Task update karne ka function + isUpdating: jab update chal raha ho toh true
-  const { mutate: updateTask, isPending: isUpdating } = TaskDataHook.useUpdateTask();
+  const { mutate: updateTask, isPending: isUpdating } =
+    TaskDataHook.useUpdateTask();
 
   // Task delete karne ka function + isDeleting: jab delete chal raha ho toh true
-  const { mutate: runDeleteTask, isPending: isDeleting } = TaskDataHook.useDeleteTask();
+  const { mutate: runDeleteTask, isPending: isDeleting } =
+    TaskDataHook.useDeleteTask();
 
   // Konsa task delete confirm ke liye select hua — null matlab koi nahi
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
@@ -46,38 +50,53 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
 
   // selectedTaskId string se pura Task object nikalo — tasks list me se
   // useMemo: sirf tab recalculate karo jab tasks ya selectedTaskId change ho
-  const selectedTask = React.useMemo(() => tasks.find((t) => t.id === selectedTaskId) ?? null, [tasks, selectedTaskId]);
+  const selectedTask = React.useMemo(
+    () => tasks.find((t) => t.id === selectedTaskId) ?? null,
+    [tasks, selectedTaskId],
+  );
 
   // Progress stats calculate karo — total, completed, aur % done
   // useMemo: sirf tab recalculate karo jab tasks array change ho
-  const { totalTasks, completedTasks, progressPercentage } = React.useMemo(() => {
-    const total = tasks.length;
-    const completed = tasks.filter((t) => t.status === "Completed").length;
-    const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
-    return { totalTasks: total, completedTasks: completed, progressPercentage: progress };
-  }, [tasks]);
+  const { totalTasks, completedTasks, progressPercentage } =
+    React.useMemo(() => {
+      const total = tasks.length;
+      const completed = tasks.filter((t) => t.status === "Completed").length;
+      const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+      return {
+        totalTasks: total,
+        completedTasks: completed,
+        progressPercentage: progress,
+      };
+    }, [tasks]);
 
   // Task checkbox tap hone par: status toggle karo aur celebration screen pe jao
   // useCallback: stable function reference — har render pe naya function na bane
-  const handleToggleTask = React.useCallback((task: Task) => {
-    // Agar Completed hai toh Pending karo, aur agar Pending hai toh Completed karo
-    const nextStatus = task.status === "Completed" ? "Pending" : "Completed";
+  const handleToggleTask = React.useCallback(
+    (task: Task) => {
+      // Agar Completed hai toh Pending karo, aur agar Pending hai toh Completed karo
+      const nextStatus = task.status === "Completed" ? "Pending" : "Completed";
 
-    // Pehle celebration screen pe jao (lag-free feel ke liye — state change se pehle)
-    router.push({
-      pathname: "/celebration",
-      params: {
-        title: nextStatus === "Completed" ? "Victory! Task Completed 🥳" : "Task Re-opened 🎯",
-        description: nextStatus === "Completed"
-          ? `Fantastic job! You have successfully finished "${task.title}". Keep up the superb momentum!`
-          : `"${task.title}" has been set back to active. Let's conquer it again!`,
-        type: nextStatus === "Completed" ? "complete" : "add",
-      },
-    });
+      // Pehle celebration screen pe jao (lag-free feel ke liye — state change se pehle)
+      router.push({
+        pathname: "/celebration",
+        params: {
+          title:
+            nextStatus === "Completed"
+              ? "Victory! Task Completed 🥳"
+              : "Task Re-opened 🎯",
+          description:
+            nextStatus === "Completed"
+              ? `Fantastic job! You have successfully finished "${task.title}". Keep up the superb momentum!`
+              : `"${task.title}" has been set back to active. Let's conquer it again!`,
+          type: nextStatus === "Completed" ? "complete" : "add",
+        },
+      });
 
-    // Backend pe status update karo — React Query cache apne aap refresh karega
-    updateTask({ id: task.id, data: { status: nextStatus } });
-  }, [router, updateTask]);
+      // Backend pe status update karo — React Query cache apne aap refresh karega
+      updateTask({ id: task.id, data: { status: nextStatus } });
+    },
+    [router, updateTask],
+  );
 
   return (
     <View className="flex-1 bg-background">
@@ -98,13 +117,14 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
                   Tasks
                 </Text>
                 <Text className="text-muted-foreground text-sm font-medium mt-1 leading-5">
-                  Manage, organize, and track your daily priorities and workspace goals.
+                  Manage, organize, and track your daily priorities and
+                  workspace goals.
                 </Text>
               </View>
 
               {/* + button: tap karo toh new task add screen pe jao */}
               <Pressable
-                onPress={() => router.push('/tasks/add' as any)}
+                onPress={() => router.push("/tasks/add" as any)}
                 className="h-11 w-11 bg-primary rounded-2xl items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.96] mt-1"
               >
                 <Plus color={theme.primaryForeground} size={22} />
@@ -134,7 +154,6 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
 
         {/* BODY — rounded top corners ke saath header ke upar overlap karta hai */}
         <View className="px-5 py-7 rounded-t-[42px] bg-background -mt-2 flex-1 min-h-[600px] border-t border-border/10">
-
           {/* Category filter chips: All / Work / Personal / Urgent */}
           <AnimatedReveal variant="slide-right" delay={150} duration={400}>
             {/* active: abhi kaunsa filter selected, onChange: filter change hone par setFilter call */}
@@ -152,7 +171,7 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
                 <TaskCard
                   key={task.id}
                   task={task}
-                  onToggle={() => handleToggleTask(task)}         // Checkbox tap
+                  onToggle={() => handleToggleTask(task)} // Checkbox tap
                   onOptionsPress={() => setSelectedTaskId(task.id)} // 3-dot menu tap
                 />
               ))
@@ -166,30 +185,30 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
 
       {/* OPTIONS SHEET — 3-dot menu tap karne par neeche se slide hota hai */}
       <TaskOptionsSheet
-        task={selectedTask}            // Jis task ka menu open hai uski data
-        visible={!!selectedTaskId}     // selectedTaskId ho toh sheet dikhao
-        onClose={() => setSelectedTaskId(null)}  // Sheet band karo
+        task={selectedTask} // Jis task ka menu open hai uski data
+        visible={!!selectedTaskId} // selectedTaskId ho toh sheet dikhao
+        onClose={() => setSelectedTaskId(null)} // Sheet band karo
         onView={() => {
-          const id = selectedTaskId!;  // primitive state — cache refresh se null nahi hoga
+          const id = selectedTaskId!; // primitive state — cache refresh se null nahi hoga
           setSelectedTaskId(null);
           router.push({ pathname: "/tasks/[id]" as any, params: { id } });
         }}
         onEdit={() => {
-          const id = selectedTaskId!;  // primitive state — cache refresh se null nahi hoga
+          const id = selectedTaskId!; // primitive state — cache refresh se null nahi hoga
           setSelectedTaskId(null);
-          router.push({ pathname: '/tasks/edit/[id]' as any, params: { id } });
+          router.push({ pathname: "/tasks/edit/[id]" as any, params: { id } });
         }}
         onDelete={() => {
           setDeleteTaskId(selectedTaskId); // Delete confirm ke liye task ID save karo
-          setSelectedTaskId(null);         // Options sheet band karo
+          setSelectedTaskId(null); // Options sheet band karo
         }}
       />
 
       {/* DELETE CONFIRMATION ALERT — delete tap karne ke baad confirmation maango */}
       <DeleteTaskAlert
-        visible={!!deleteTaskId}       // deleteTaskId ho toh alert dikhao
-        isDeleting={isDeleting}        // Delete chal raha ho toh button loading me dikhao
-        onCancel={() => setDeleteTaskId(null)}  // Cancel: alert band karo
+        visible={!!deleteTaskId} // deleteTaskId ho toh alert dikhao
+        isDeleting={isDeleting} // Delete chal raha ho toh button loading me dikhao
+        onCancel={() => setDeleteTaskId(null)} // Cancel: alert band karo
         onConfirm={() => {
           if (!deleteTaskId) return;
           runDeleteTask(deleteTaskId, {

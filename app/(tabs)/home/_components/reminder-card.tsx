@@ -1,29 +1,25 @@
 import * as Haptics from "expo-haptics";
-import {
-  Bell,
-  Clock,
-  CheckCircle2,
-} from "lucide-react-native";
+import { Bell, CheckCircle2, Clock } from "lucide-react-native";
 import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
-import { TaskDataHook } from "@/hooks/data-hooks/use-task";
 import { useTheme } from "@/hooks/use-theme";
+import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import {
   cancelAllReminders,
   registerForNotificationsAsync,
   scheduleDailyPendingReminder,
   triggerImmediateReminder,
 } from "@/lib/notifications";
-import type { Task } from "@/services/tasks";
 import { toast } from "@/lib/toast";
+import type { Task } from "@/lib/types/tasks";
 
 export function ReminderCard() {
   const { theme } = useTheme();
-  const { data: tasks = [] } = TaskDataHook.useTasksList();
+  const { data: tasks = [] } = TaskDataHook.useGetTasks();
 
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,7 +27,6 @@ export function ReminderCard() {
   const pendingTasks = tasks.filter((t: Task) => t.status === "Pending");
   const pendingCount = pendingTasks.length;
   const pendingTitles = pendingTasks.map((t: Task) => t.title);
-
 
   const handleTestReminder = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

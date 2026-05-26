@@ -2,8 +2,8 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import {
   ArrowRight,
-  ClipboardList,
   Calendar,
+  ClipboardList,
   ListTodo,
 } from "lucide-react-native";
 import React from "react";
@@ -12,15 +12,15 @@ import { Pressable, View } from "react-native";
 import { NoTasksIllustration } from "@/components/illustrations";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { TaskDataHook } from "@/hooks/data-hooks/use-task";
 import { useTheme } from "@/hooks/use-theme";
+import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { cn } from "@/lib/utils";
-import type { Task, SubTask } from "@/services/tasks";
+import type { SubTask, Task } from "@/lib/types/tasks";
 
 export function RecentTasksList() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { data: tasks = [] } = TaskDataHook.useTasksList();
+  const { data: tasks = [] } = TaskDataHook.useGetTasks();
 
   // Get up to 3 most important pending or recently updated tasks
   const displayTasks = React.useMemo(() => {
@@ -98,10 +98,12 @@ export function RecentTasksList() {
         <View className="gap-2.5 -mt-4">
           {displayTasks.map((task) => {
             const isCompleted = task.status === "Completed";
-            
+
             // Calculate dynamic subtask steps progress
             const hasSteps = task.steps && task.steps.length > 0;
-            const completedSteps = hasSteps ? task.steps!.filter((s: SubTask) => s.completed).length : 0;
+            const completedSteps = hasSteps
+              ? task.steps!.filter((s: SubTask) => s.completed).length
+              : 0;
             const totalSteps = hasSteps ? task.steps!.length : 0;
 
             return (
@@ -116,7 +118,7 @@ export function RecentTasksList() {
                 <View
                   className={cn(
                     "bg-secondary/40 border border-border/10 rounded-2xl px-4 pt-3.5 pb-3",
-                    isCompleted ? "opacity-60" : ""
+                    isCompleted ? "opacity-60" : "",
                   )}
                 >
                   {/* Top Main Section */}
@@ -125,18 +127,22 @@ export function RecentTasksList() {
                       <Text
                         className={cn(
                           "text-[17px] font-extrabold leading-tight",
-                          isCompleted ? "text-muted-foreground line-through opacity-60" : "text-foreground"
+                          isCompleted
+                            ? "text-muted-foreground line-through opacity-60"
+                            : "text-foreground",
                         )}
                       >
                         {task.title}
                       </Text>
-                      
+
                       {task.description ? (
                         <Text
                           numberOfLines={1}
                           className={cn(
                             "text-xs mt-0.5",
-                            isCompleted ? "text-muted-foreground/60" : "text-muted-foreground"
+                            isCompleted
+                              ? "text-muted-foreground/60"
+                              : "text-muted-foreground",
                           )}
                         >
                           {task.description}
@@ -150,24 +156,32 @@ export function RecentTasksList() {
                     {/* 1. Priority Indicator Pill */}
                     {task.category === "Urgent" && (
                       <View className="bg-destructive/10 border border-destructive/20 px-2 py-0.5 rounded-lg">
-                        <Text className="text-[11px] font-extrabold text-destructive">Urgent</Text>
+                        <Text className="text-[11px] font-extrabold text-destructive">
+                          Urgent
+                        </Text>
                       </View>
                     )}
                     {task.category === "Work" && (
                       <View className="bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-lg">
-                        <Text className="text-[11px] font-extrabold text-primary">Work</Text>
+                        <Text className="text-[11px] font-extrabold text-primary">
+                          Work
+                        </Text>
                       </View>
                     )}
                     {task.category === "Personal" && (
                       <View className="bg-secondary/30 border border-border/40 px-2 py-0.5 rounded-lg">
-                        <Text className="text-[11px] font-extrabold text-foreground">Personal</Text>
+                        <Text className="text-[11px] font-extrabold text-foreground">
+                          Personal
+                        </Text>
                       </View>
                     )}
 
                     {/* 2. Due Date Pill */}
                     <View className="bg-secondary/25 border border-border/30 px-2 py-0.5 rounded-lg flex-row items-center gap-1">
                       <Calendar size={11} color="gray" />
-                      <Text className="text-[11px] text-muted-foreground font-bold">{task.dueDate}</Text>
+                      <Text className="text-[11px] text-muted-foreground font-bold">
+                        {task.dueDate}
+                      </Text>
                     </View>
 
                     {/* 3. Steps Checklist Progress Pill */}

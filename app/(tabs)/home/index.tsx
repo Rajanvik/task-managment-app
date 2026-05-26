@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import { DashboardDataHook } from "@/hooks/data-hooks/use-dashboard";
+import { DashboardDataHook } from "@/lib/data-hooks/dashboard";
 import { AnimatedReveal } from "@/components/ui/animated-reveal";
 
 import { HomeHeader } from "./_components/home-header";

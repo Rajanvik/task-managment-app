@@ -1,18 +1,30 @@
-import React from 'react';
-import { View, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { AuthDataHook } from '@/hooks/data-hooks/use-auth';
-import { Mail, Lock, LogIn } from 'lucide-react-native';
-import { toast } from '@/lib/toast';
-import { Icon } from '@/components/ui/icon';
+import { Icon } from "@/components/ui/icon";
+import { AuthDataHook } from "@/lib/data-hooks/auth";
+import { useRouter } from "expo-router";
+import { Lock, LogIn, Mail } from "lucide-react-native";
+import React from "react";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Text } from '@/components/ui/text';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ZLogin, TLogin } from '@/lib/zod/user/login';
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { TLogin, ZLogin } from "@/lib/zod/user/login";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface ILoginScreenProps {}
 
@@ -22,8 +34,8 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
   const form = useForm<TLogin>({
     resolver: zodResolver(ZLogin),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -31,7 +43,7 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
   const { mutate, isPending } = AuthDataHook.useLogin({
     // 👉 onSuccess: Jab user details valid honge aur login successful ho jayega
     onSuccess: () => {
-      router.replace('/home'); // 1. Home page/dashboard par le jao
+      router.replace("/home"); // 1. Home page/dashboard par le jao
       form.reset(); // 2. Form input values ko reset/clear karo
     },
   });
@@ -43,18 +55,19 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-background"
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
         <View className="flex-1 justify-center px-8 py-10">
-          
           {/* Header section */}
           <View className="mb-10 items-center">
             <View className="p-4 bg-primary/10 rounded-full mb-4">
               <Icon as={LogIn} size={40} className="text-foreground" />
             </View>
-            <Text className="text-3xl font-bold text-foreground text-center">Welcome Back</Text>
+            <Text className="text-3xl font-bold text-foreground text-center">
+              Welcome Back
+            </Text>
             <Text className="text-sm text-muted-foreground text-center mt-2">
               Sign in to keep organizing your daily tasks
             </Text>
@@ -62,9 +75,7 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
 
           {/* Form container */}
           <View className="space-y-4">
-            
             <Form {...form}>
-              
               {/* Email Field */}
               <FormField
                 control={form.control}
@@ -74,7 +85,11 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon as={Mail} size={18} className="text-muted-foreground mr-3" />
+                        <Icon
+                          as={Mail}
+                          size={18}
+                          className="text-muted-foreground mr-3"
+                        />
                         <Input
                           placeholder="name@example.com"
                           value={value}
@@ -100,7 +115,11 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon as={Lock} size={18} className="text-muted-foreground mr-3" />
+                        <Icon
+                          as={Lock}
+                          size={18}
+                          className="text-muted-foreground mr-3"
+                        />
                         <Input
                           placeholder="Enter your password"
                           value={value}
@@ -127,8 +146,14 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <View className="flex-row items-center gap-2">
-                    <Text className="text-primary-foreground font-bold text-base">Login</Text>
-                    <Icon as={LogIn} size={18} className="text-primary-foreground" />
+                    <Text className="text-primary-foreground font-bold text-base">
+                      Login
+                    </Text>
+                    <Icon
+                      as={LogIn}
+                      size={18}
+                      className="text-primary-foreground"
+                    />
                   </View>
                 )}
               </Button>
@@ -136,16 +161,17 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
 
             {/* Navigate to Register */}
             <View className="flex-row justify-center mt-6">
-              <Text className="text-sm text-muted-foreground">Don't have an account? </Text>
+              <Text className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+              </Text>
               <Button
                 variant="link"
                 className="p-0 h-auto"
-                onPress={() => router.push('/register')}
+                onPress={() => router.push("/register")}
               >
                 <Text className="text-sm text-primary font-bold">Register</Text>
               </Button>
             </View>
-
           </View>
         </View>
       </ScrollView>
