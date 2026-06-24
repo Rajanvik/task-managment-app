@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 /**
  * @openapi
- * /health:
+ * /api/health:
  *   get:
  *     tags:
  *       - System
