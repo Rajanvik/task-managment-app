@@ -15,7 +15,19 @@ import { prisma } from '@/lib/prisma';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/HealthStatus'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 status:
+ *                   type: string
+ *                 database:
+ *                   type: string
+ *                 uptime:
+ *                   type: number
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
  */
 export const GET = async () => {
     let dbStatus = 'disconnected';
