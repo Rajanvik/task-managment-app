@@ -14,8 +14,10 @@ const nextConfig = {
       },
     ];
   },
-  outputFileTracingIncludes: {
-    '/api/swagger': ['./src/app/api/**/*.ts'],
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/swagger': ['./src/app/api/**/*.ts'],
+    },
   },
 };
 
