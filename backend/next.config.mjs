@@ -14,6 +14,20 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/api-docs',
+        destination: '/docs',
+        permanent: true,
+      },
+      {
+        source: '/swagger',
+        destination: '/docs',
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     outputFileTracingIncludes: {
       '/api/swagger': ['./src/app/api/**/*.ts'],
