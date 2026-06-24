@@ -14,6 +14,9 @@ const nextConfig = {
       },
     ];
   },
+  outputFileTracingIncludes: {
+    '/api/swagger': ['./src/app/api/**/*.ts'],
+  },
 };
 
 export default nextConfig;

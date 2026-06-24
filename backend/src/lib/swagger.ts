@@ -12,12 +12,6 @@ export const getApiDocs = async () => {
         version: '1.0.0',
         description: 'Interactive API Documentation for the Task Management System',
       },
-      servers: [
-        {
-          url: 'http://localhost:5000',
-          description: 'Local development server',
-        },
-      ],
       components: {
         securitySchemes: {
           BearerAuth: {
