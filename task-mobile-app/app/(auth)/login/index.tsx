@@ -1,10 +1,10 @@
 import { Icon } from "@/components/ui/icon";
+import { Spinner } from "@/components/ui/spinner";
 import { AuthDataHook } from "@/lib/data-hooks/auth";
 import { useRouter } from "expo-router";
 import { Lock, LogIn, Mail } from "lucide-react-native";
 import React from "react";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -87,22 +87,15 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
                   <FormItem className="mb-4">
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon
-                          as={Mail}
-                          size={18}
-                          className="text-muted-foreground mr-3"
-                        />
-                        <Input
-                          placeholder="name@example.com"
-                          value={value}
-                          onChangeText={onChange}
-                          onBlur={onBlur}
-                          autoCapitalize="none"
-                          keyboardType="email-address"
-                          className="flex-1 text-foreground text-sm border-0 h-full shadow-none bg-transparent"
-                        />
-                      </View>
+                      <Input
+                        icon={Mail}
+                        placeholder="name@example.com"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -117,22 +110,15 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
                   <FormItem className="mb-4">
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <View className="flex-row items-center bg-card border border-border rounded-xl px-3.5 h-12">
-                        <Icon
-                          as={Lock}
-                          size={18}
-                          className="text-muted-foreground mr-3"
-                        />
-                        <Input
-                          placeholder="Enter your password"
-                          value={value}
-                          onChangeText={onChange}
-                          onBlur={onBlur}
-                          secureTextEntry
-                          autoCapitalize="none"
-                          className="flex-1 text-foreground text-sm border-0 h-full shadow-none bg-transparent"
-                        />
-                      </View>
+                      <Input
+                        icon={Lock}
+                        placeholder="Enter your password"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        secureTextEntry
+                        autoCapitalize="none"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -146,7 +132,7 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
                 className="w-full mt-6 h-12 rounded-xl bg-primary items-center justify-center flex-row shadow-sm"
               >
                 {isPending ? (
-                  <ActivityIndicator color="#fff" />
+                  <Spinner size={16} className="text-primary-foreground" />
                 ) : (
                   <View className="flex-row items-center gap-2">
                     <Text className="text-primary-foreground font-bold text-base">

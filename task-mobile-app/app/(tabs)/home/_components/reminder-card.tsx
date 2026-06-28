@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { Icon } from "@/components/ui/icon";
+import { cn } from "@/lib/utils";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import {
   cancelAllReminders,
@@ -105,7 +106,10 @@ export function ReminderCard() {
         <View className="bg-secondary/40 border border-border/10 rounded-2xl p-4 mb-5 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3 flex-1 mr-3">
             <View
-              className={`h-2.5 w-2.5 rounded-full shrink-0 ${pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"}`}
+              className={cn(
+                "h-2.5 w-2.5 rounded-full shrink-0",
+                pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"
+              )}
             />
             <View className="flex-1">
               <Text className="text-xs font-semibold text-foreground">

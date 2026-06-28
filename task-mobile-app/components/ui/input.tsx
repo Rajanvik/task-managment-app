@@ -1,35 +1,40 @@
 import { cn } from '@/lib/utils';
-import { Platform, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
+import { Icon } from '@/components/ui/icon';
+import type { LucideIcon } from 'lucide-react-native';
 
-function Input({ className, ...props }: React.ComponentProps<typeof TextInput> & React.RefAttributes<TextInput>) {
-  const isInvalid = props['aria-invalid'];
+export interface InputProps extends React.ComponentProps<typeof TextInput> {
+  icon?: LucideIcon;
+  iconSize?: number;
+}
+
+function Input({ className, icon: IconComponent, iconSize = 18, ...props }: InputProps & React.RefAttributes<TextInput>) {
+  const isInvalid = (props as any)['aria-invalid'];
   
   return (
-    <TextInput
+    <View
       className={cn(
-        'dark:bg-input/30 border-input bg-background text-foreground flex h-10 w-full min-w-0 flex-row items-center rounded-md border px-3 py-1 text-base leading-5 shadow-sm shadow-black/5 sm:h-9',
-        props.editable === false &&
-        cn(
-          'opacity-50',
-          Platform.select({ web: 'disabled:pointer-events-none disabled:cursor-not-allowed' })
-        ),
-        Platform.select({
-          web: cn(
-            'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground outline-none transition-[color,box-shadow] md:text-sm',
-            'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive'
-          ),
-          native: cn(
-            'placeholder:text-muted-foreground/50',
-            isInvalid && 'border-red-500 border bg-red-500/5'
-          ),
-        }),
-        className,
-        // Override border-none if invalid to show error border clearly
-        isInvalid && 'border-red-500 border'
+        "relative flex-row items-center w-full bg-card border border-border rounded-xl px-3.5 h-12",
+        isInvalid && "border-destructive bg-destructive/5",
+        props.editable === false && "opacity-50"
       )}
-      {...props}
-    />
+    >
+      {IconComponent && (
+        <Icon
+          as={IconComponent}
+          size={iconSize}
+          className="text-muted-foreground mr-3"
+        />
+      )}
+      <TextInput
+        className={cn(
+          "flex-1 text-foreground text-sm border-0 h-full shadow-none bg-transparent",
+          className
+        )}
+        placeholderTextColor="#a1a1aa" // text-muted-foreground color
+        {...props}
+      />
+    </View>
   );
 }
 
