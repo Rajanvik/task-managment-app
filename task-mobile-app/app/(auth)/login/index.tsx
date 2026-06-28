@@ -29,7 +29,7 @@ import { useForm } from "react-hook-form";
 interface ILoginScreenProps {}
 
 const LoginScreen: React.FC<ILoginScreenProps> = () => {
-  const router = useRouter(); // Register button navigation ke liye
+  const router = useRouter(); // Sirf Register button navigation ke liye (login redirect useRouteGuard karta hai)
   const form = useForm<TLogin>({
     resolver: zodResolver(ZLogin),
     defaultValues: {
@@ -39,15 +39,13 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
   });
 
   // 🔍 STEP 1: useLogin Hook call karo aur data save ke lifecycle events handle karo
-  // NOTE: Yahan se direct router.replace nahi karte — useRouteGuard automatically
-  // token detect karke /home par redirect kar deta hai. Double-navigation se APK crash hota tha.
+  // IMPORTANT: Yahan se KABHI direct router.replace NAHI karte.
+  // AuthService.login() AsyncStorage me token save karta hai.
+  // useRouteGuard (in _layout.tsx) segments change detect karke automatically /home redirect kar deta hai.
+  // Agar yahan bhi router.replace karein toh DOUBLE NAVIGATION hoti hai jo production APK crash karta hai.
   const { mutate, isPending } = AuthDataHook.useLogin({
     onSuccess: () => {
-      form.reset(); // Form input values ko reset/clear karo
-      // Redirect to home with a safe delay for navigator stability in production
-      setTimeout(() => {
-        router.replace("/home");
-      }, 100);
+      form.reset(); // Form input values ko reset/clear karo — navigation useRouteGuard handle karega
     },
   });
 
