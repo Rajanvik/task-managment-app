@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
+import { Icon } from '@/components/ui/icon';
 import { Sunrise, Sun, Sunset, Moon, Clock, Calendar } from 'lucide-react-native';
 
 interface IRealTimeClockProps {}
 
 export const RealTimeClock: React.FC<IRealTimeClockProps> = () => {
   const [time, setTime] = useState(new Date());
-  const { theme } = useTheme();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -63,7 +63,7 @@ export const RealTimeClock: React.FC<IRealTimeClockProps> = () => {
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-1">
           <View className="w-9 h-9 rounded-full items-center justify-center bg-primary/10">
-            <IconComponent size={18} color={theme.primary} strokeWidth={2.5} />
+            <Icon as={IconComponent} className="text-primary" size={18} strokeWidth={2.5} />
           </View>
           <Text className="text-sm font-black text-foreground uppercase tracking-widest">
             {greeting}
@@ -72,7 +72,7 @@ export const RealTimeClock: React.FC<IRealTimeClockProps> = () => {
 
         <View className="flex-row items-center gap-1.5 bg-secondary dark:bg-muted border border-border/50 pl-1 pr-3 py-0.5 rounded-lg">
           <View className="w-6 h-6 rounded-md items-center justify-center bg-primary/10">
-            <Calendar size={12} color={theme.primary} strokeWidth={2.5} />
+            <Icon as={Calendar} className="text-primary" size={12} strokeWidth={2.5} />
           </View>
           <Text className="text-xs font-extrabold text-foreground">
             {dayName}, {monthName} {dateNum}, {yearNum}
@@ -85,7 +85,7 @@ export const RealTimeClock: React.FC<IRealTimeClockProps> = () => {
         {/* Clock Label (Left aligned) */}
         <View className="flex-row items-center gap-1.5">
           <View className="w-9 h-9 rounded-full items-center justify-center bg-primary/10">
-            <Clock size={18} color={theme.primary} strokeWidth={2.5} />
+            <Icon as={Clock} className="text-primary" size={18} strokeWidth={2.5} />
           </View>
           <Text className="text-sm font-black text-foreground uppercase tracking-widest">
              Time

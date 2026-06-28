@@ -1,7 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Icon } from '@/components/ui/icon';
+import { BarChart2, ListTodo, Home, Compass, User } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
+import { useColorScheme } from 'nativewind';
+import { cn } from '@/lib/utils';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -11,16 +14,16 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const TABS = [
-  { name: 'analytics/index', label: 'Stats',   icon: 'chart.bar.fill'  },
-  { name: 'tasks',           label: 'Tasks',   icon: 'list.bullet'     },
-  { name: 'home/index',      label: 'Home',    icon: 'house.fill'      },
-  { name: 'explore/index',   label: 'Explore', icon: 'paperplane.fill' },
-  { name: 'profile/index',   label: 'Profile', icon: 'person.fill'     },
+  { name: 'analytics/index', label: 'Stats',   icon: BarChart2 },
+  { name: 'tasks',           label: 'Tasks',   icon: ListTodo  },
+  { name: 'home/index',      label: 'Home',    icon: Home      },
+  { name: 'explore/index',   label: 'Explore', icon: Compass   },
+  { name: 'profile/index',   label: 'Profile', icon: User      },
 ] as const;
 
 // Fast O(1) tab configuration lookup
 const TAB_MAP = TABS.reduce((acc, tab) => {
-  acc[tab.name] = tab;
+  acc[tab.name] = tab as any;
   return acc;
 }, {} as Record<string, typeof TABS[number]>);
 
@@ -79,41 +82,36 @@ const TabActiveBg = React.memo(({ focused, colorScheme }: TabActiveBgProps) => {
 
 interface TabIconProps {
   focused: boolean;
-  icon: string;
-  theme: any;
+  icon: any;
 }
 
 /**
  * Standard Tab Icon Component
- * Lightweight pure component rendering IconSymbol directly.
+ * Lightweight pure component rendering Lucide icon directly.
  */
-const TabIcon = React.memo(({ focused, icon, theme }: TabIconProps) => (
-  <IconSymbol
+const TabIcon = React.memo(({ focused, icon }: TabIconProps) => (
+  <Icon
     size={20}
-    name={icon as any}
-    color={focused ? theme.foreground : theme.mutedForeground}
+    as={icon}
+    className={focused ? "text-foreground" : "text-muted-foreground"}
   />
 ));
 
 interface TabLabelProps {
   focused: boolean;
   label: string;
-  theme: any;
 }
 
 /**
  * Standard Tab Label Component
  * High-performance lightweight memoized text wrapper.
  */
-const TabLabel = React.memo(({ focused, label, theme }: TabLabelProps) => (
+const TabLabel = React.memo(({ focused, label }: TabLabelProps) => (
   <Text
-    style={[
-      styles.tabLabel,
-      {
-        fontWeight: focused ? '700' : '500',
-        color: focused ? theme.foreground : theme.mutedForeground,
-      }
-    ]}
+    className={cn(
+      "text-[10px] tracking-[0.2px] mt-0.5",
+      focused ? "font-bold text-foreground" : "font-medium text-muted-foreground"
+    )}
   >
     {label}
   </Text>
@@ -123,7 +121,6 @@ interface CenterTabBarButtonProps {
   route: any;
   focused: boolean;
   tabInfo: typeof TABS[number];
-  theme: any;
   onPress: (routeName: string, routeKey: string, focused: boolean) => void;
 }
 
@@ -132,7 +129,7 @@ interface CenterTabBarButtonProps {
  * Supports custom spring scales, touch/press haptic responses, and dynamic active scaling.
  * Completely shadowless flat design.
  */
-const CenterTabBarButton = React.memo(({ route, focused, tabInfo, theme, onPress }: CenterTabBarButtonProps) => {
+const CenterTabBarButton = React.memo(({ route, focused, tabInfo, onPress }: CenterTabBarButtonProps) => {
   const activeProgress = useSharedValue(focused ? 1 : 0);
   const pressScale = useSharedValue(1);
 
@@ -150,7 +147,6 @@ const CenterTabBarButton = React.memo(({ route, focused, tabInfo, theme, onPress
       transform: [
         { scale: pressScale.value * baseScale },
       ],
-      backgroundColor: theme.secondary,
     };
   });
 
@@ -179,17 +175,15 @@ const CenterTabBarButton = React.memo(({ route, focused, tabInfo, theme, onPress
           styles.centerAnimatedView,
           animatedStyle,
         ]}
+        className="bg-secondary"
       >
-        <IconSymbol
+        <Icon
           size={24}
-          name={tabInfo.icon as any}
-          color={theme.foreground}
+          as={tabInfo.icon}
+          className="text-foreground"
         />
         <Text
-          style={[
-            styles.centerText,
-            { color: theme.foreground }
-          ]}
+          className="text-[9px] font-bold mt-0.5 tracking-[0.3px] text-foreground"
         >
           {tabInfo.label}
         </Text>
@@ -199,7 +193,6 @@ const CenterTabBarButton = React.memo(({ route, focused, tabInfo, theme, onPress
 }, (prevProps, nextProps) => {
   return (
     prevProps.focused === nextProps.focused &&
-    prevProps.theme === nextProps.theme &&
     prevProps.route.key === nextProps.route.key &&
     prevProps.onPress === nextProps.onPress
   );
@@ -209,7 +202,6 @@ interface TabItemProps {
   route: any;
   focused: boolean;
   tabInfo: typeof TABS[number];
-  theme: any;
   colorScheme: 'light' | 'dark';
   onPress: (routeName: string, routeKey: string, focused: boolean) => void;
 }
@@ -218,7 +210,7 @@ interface TabItemProps {
  * Optimized individual standard Tab item wrapper.
  * Using strict React.memo comparison to bypass render work when focus stays unchanged.
  */
-const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPress }: TabItemProps) => {
+const TabItem = React.memo(({ route, focused, tabInfo, colorScheme, onPress }: TabItemProps) => {
   const handlePress = useCallback(() => {
     onPress(route.name, route.key, focused);
   }, [onPress, route.name, route.key, focused]);
@@ -244,7 +236,6 @@ const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPre
           <TabIcon
             focused={focused}
             icon={tabInfo.icon}
-            theme={theme}
           />
         </View>
 
@@ -252,7 +243,6 @@ const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPre
         <TabLabel
           focused={focused}
           label={tabInfo.label}
-          theme={theme}
         />
       </View>
     </Pressable>
@@ -260,7 +250,6 @@ const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPre
 }, (prevProps, nextProps) => {
   return (
     prevProps.focused === nextProps.focused &&
-    prevProps.theme === nextProps.theme &&
     prevProps.colorScheme === nextProps.colorScheme &&
     prevProps.route.key === nextProps.route.key &&
     prevProps.onPress === nextProps.onPress
@@ -268,7 +257,7 @@ const TabItem = React.memo(({ route, focused, tabInfo, theme, colorScheme, onPre
 });
 
 export function CustomTabBar({ state, descriptors, navigation }: any) {
-  const { colorScheme, theme } = useTheme();
+  const { colorScheme } = useColorScheme();
   const insets = useSafeAreaInsets();
 
   const doNav = useCallback((routeName: string, routeKey: string, focused: boolean) => {
@@ -299,17 +288,13 @@ export function CustomTabBar({ state, descriptors, navigation }: any) {
       >
         {/* OUTER RING — bg-secondary, separation border, shadowless flat design */}
         <View
-          className="bg-secondary items-center justify-center"
-          style={[
-            styles.outerCircle,
-            { borderColor: theme.background }
-          ]}
+          className="bg-secondary items-center justify-center border-background"
+          style={styles.outerCircle}
         >
           <CenterTabBarButton
             route={cRoute}
             focused={cFocused}
             tabInfo={cTab}
-            theme={theme}
             onPress={doNav}
           />
         </View>
@@ -342,8 +327,7 @@ export function CustomTabBar({ state, descriptors, navigation }: any) {
               route={route}
               focused={focused}
               tabInfo={tabInfo}
-              theme={theme}
-              colorScheme={colorScheme}
+              colorScheme={colorScheme || 'light'}
               onPress={doNav}
             />
           );

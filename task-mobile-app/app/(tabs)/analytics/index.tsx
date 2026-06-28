@@ -2,6 +2,7 @@ import React from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
+import { Icon } from '@/components/ui/icon';
 import Animated, { 
   useAnimatedStyle, 
   useSharedValue, 
@@ -42,8 +43,6 @@ function EmptyStateIllustration() {
 }
 
 export default function AnalyticsScreen() {
-  const { theme } = useTheme();
-
   const handleNotifyMe = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     alert("You're on the list! We'll notify you as soon as the Stats dashboard goes live. 🚀");
@@ -97,7 +96,7 @@ export default function AnalyticsScreen() {
                 ]}
                 className="mt-8 px-6 py-3 bg-secondary/50 dark:bg-secondary/10 border border-border/40 rounded-full flex-row items-center gap-2"
               >
-                <Bell size={14} color={theme.foreground} />
+                <Icon as={Bell} className="text-foreground" size={14} />
                 <Text className="text-xs font-extrabold text-foreground tracking-wide uppercase">
                   Notify me when live
                 </Text>

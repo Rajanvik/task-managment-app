@@ -11,7 +11,7 @@ import { BackgroundBlobs } from '@/app/(tabs)/_components/onboarding/BackgroundB
 import { OnboardingHeader } from '@/app/(tabs)/_components/onboarding/OnboardingHeader';
 import { OnboardingSlide } from '@/app/(tabs)/_components/onboarding/OnboardingSlide';
 import { OnboardingControls } from '@/app/(tabs)/_components/onboarding/OnboardingControls';
-import { useTheme } from '@/hooks/use-theme';
+import { useColorScheme } from 'nativewind';
 
 const SLIDES = [
   {
@@ -44,7 +44,7 @@ interface IOnboardingIndexProps {}
 
 const OnboardingIndex: React.FC<IOnboardingIndexProps> = () => {
   const router = useRouter();
-  const { colorScheme, theme } = useTheme();
+  const { colorScheme } = useColorScheme();
   const { width: screenWidth } = useWindowDimensions();
   
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -77,10 +77,15 @@ const OnboardingIndex: React.FC<IOnboardingIndexProps> = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     try {
       await AsyncStorage.setItem('onboardingCompleted', 'true');
-      router.replace('/login' as any);
+      // Small delay so navigator is fully ready in production APK builds
+      setTimeout(() => {
+        router.replace('/login' as any);
+      }, 100);
     } catch (err) {
       console.error('Failed to save onboarding completion state:', err);
-      router.replace('/login' as any);
+      setTimeout(() => {
+        router.replace('/login' as any);
+      }, 100);
     }
   };
 
@@ -111,7 +116,6 @@ const OnboardingIndex: React.FC<IOnboardingIndexProps> = () => {
           totalSlides={SLIDES.length}
           activeIcon={activeSlide.icon}
           onSkip={handleSkip}
-          theme={theme}
         />
 
         {/* Horizontal Swipe Pages */}
@@ -141,8 +145,7 @@ const OnboardingIndex: React.FC<IOnboardingIndexProps> = () => {
           totalSlides={SLIDES.length}
           onDotPress={handleDotPress}
           onNext={handleNext}
-          colorScheme={colorScheme}
-          theme={theme}
+          colorScheme={colorScheme || 'light'}
         />
       </Animated.View>
     </View>

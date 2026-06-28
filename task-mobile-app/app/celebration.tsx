@@ -15,6 +15,7 @@ import { Check } from "lucide-react-native";
 
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { PlanIllustration, AchieveIllustration } from "@/components/illustrations";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -154,7 +155,6 @@ const ConfettiParticle = React.memo(({ config }: { config: typeof PRE_CALCULATED
 
 export default function CelebrationScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
   const [showConfetti, setShowConfetti] = useState(true);
 
   // Route params
@@ -220,7 +220,7 @@ export default function CelebrationScreen() {
   const isAdding = type === "add";
 
   return (
-    <View style={[styles.mainContainer, { backgroundColor: theme.background }]}>
+    <View className="flex-1 justify-center items-center bg-background">
       {/* 
         INSTANT PARTICLES MOUNT LAYER (0ms Mount Latency!)
         Pre-calculated variables + React.memo + Staggered delay timing
@@ -236,12 +236,10 @@ export default function CelebrationScreen() {
 
       {/* Soft background ambient radial glows */}
       <View
-        className="absolute -top-36 -left-36 w-96 h-96 rounded-full blur-3xl opacity-[0.06] dark:opacity-[0.03] pointer-events-none"
-        style={{ backgroundColor: theme.foreground }}
+        className="absolute -top-36 -left-36 w-96 h-96 rounded-full blur-3xl opacity-[0.06] dark:opacity-[0.03] pointer-events-none bg-foreground"
       />
       <View
-        className="absolute -bottom-36 -right-36 w-96 h-96 rounded-full blur-3xl opacity-[0.04] dark:opacity-[0.02] pointer-events-none"
-        style={{ backgroundColor: theme.foreground }}
+        className="absolute -bottom-36 -right-36 w-96 h-96 rounded-full blur-3xl opacity-[0.04] dark:opacity-[0.02] pointer-events-none bg-foreground"
       />
 
       {/* MAIN SCREEN CELEBRATION VIEW */}
@@ -250,18 +248,18 @@ export default function CelebrationScreen() {
         {/* 1. TOP SHADCN CHECK (TICK) ICON */}
         <View className="mb-8 items-center justify-center">
           <View
-            className="w-20 h-20 rounded-full items-center justify-center bg-primary border border-primary/10 shadow-lg"
+            className="w-20 h-20 rounded-full items-center justify-center bg-primary border border-primary/10 shadow-lg shadow-primary"
             style={{
-              shadowColor: theme.primary,
               shadowOffset: { width: 0, height: 8 },
               shadowOpacity: 0.15,
               shadowRadius: 12,
               elevation: 6,
             }}
           >
-            <Check 
+            <Icon 
+              as={Check}
               size={36} 
-              color={theme.primaryForeground} 
+              className="text-primary-foreground" 
               strokeWidth={4.5} 
             />
           </View>

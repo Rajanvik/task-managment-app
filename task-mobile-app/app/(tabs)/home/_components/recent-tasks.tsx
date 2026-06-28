@@ -12,14 +12,13 @@ import { Pressable, View } from "react-native";
 import { NoTasksIllustration } from "@/components/illustrations";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { cn } from "@/lib/utils";
 import type { SubTask, Task } from "@/lib/types/tasks";
 
 export function RecentTasksList() {
   const router = useRouter();
-  const { theme } = useTheme();
   const { data: tasks = [] } = TaskDataHook.useGetTasks();
 
   // Get up to 3 most important pending or recently updated tasks
@@ -36,7 +35,7 @@ export function RecentTasksList() {
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center gap-3">
           <View className="h-10 w-10 bg-primary/10 rounded-2xl items-center justify-center">
-            <ClipboardList size={21} color={theme.primary} />
+            <Icon as={ClipboardList} className="text-primary" size={21} />
           </View>
           <View className="justify-center">
             <Text className="text-lg font-black text-foreground leading-5 tracking-tight">
@@ -63,7 +62,7 @@ export function RecentTasksList() {
               className="rounded-full bg-primary/20 items-center justify-center"
               style={{ width: 18, height: 18 }}
             >
-              <ArrowRight size={10} color={theme.primary} />
+              <Icon as={ArrowRight} className="text-primary" size={10} />
             </View>
           </Pressable>
         )}
@@ -187,7 +186,7 @@ export function RecentTasksList() {
                     {/* 3. Steps Checklist Progress Pill */}
                     {hasSteps && (
                       <View className="bg-primary/[0.04] border border-primary/15 px-2 py-0.5 rounded-lg flex-row items-center gap-1">
-                        <ListTodo size={11} color={theme.primary} />
+                        <Icon as={ListTodo} className="text-primary/70" size={11} />
                         <Text className="text-[11px] text-primary/70 font-bold">
                           {completedSteps}/{totalSteps} Steps
                         </Text>

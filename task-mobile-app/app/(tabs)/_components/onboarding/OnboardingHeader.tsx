@@ -3,6 +3,7 @@ import { View, Pressable } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
+import { Icon } from '@/components/ui/icon';
 import { LucideIcon } from 'lucide-react-native';
 
 interface OnboardingHeaderProps {
@@ -10,11 +11,6 @@ interface OnboardingHeaderProps {
   totalSlides: number;
   activeIcon: LucideIcon;
   onSkip: () => void;
-  theme: {
-    background: string;
-    primary: string;
-    foreground: string;
-  };
 }
 
 export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
@@ -22,7 +18,6 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
   totalSlides,
   activeIcon: ActiveIcon,
   onSkip,
-  theme,
 }) => {
   const insets = useSafeAreaInsets();
   // Scale animations for interactive feel
@@ -46,7 +41,7 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
   };
 
   const handleSkipPressIn = () => {
-    skipScale.value = withSpring(0.95, { damping: 12 });
+    skipScale.value = withSpring(0.94, { damping: 12 });
   };
 
   const handleSkipPressOut = () => {
@@ -61,6 +56,7 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
     >
       {/* Brand logo & icon */}
       <Pressable
+        onPress={handleLogoPressIn}
         onPressIn={handleLogoPressIn}
         onPressOut={handleLogoPressOut}
         className="flex-row items-center gap-2"
@@ -69,7 +65,7 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
           style={logoAnimatedStyle}
           className="h-7 w-7 rounded-xl items-center justify-center bg-primary shadow-sm"
         >
-          {ActiveIcon && <ActiveIcon size={14} color={theme.background} strokeWidth={3} />}
+          {ActiveIcon && <Icon as={ActiveIcon} className="text-background" size={14} strokeWidth={3} />}
         </Animated.View>
         <Text className="text-[12px] font-black tracking-widest uppercase text-foreground">
           Taskly Pro
@@ -91,15 +87,8 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
           </Pressable>
         </Animated.View>
       ) : (
-        <Animated.View 
-          entering={FadeInDown.delay(100).duration(300)}
-          className="px-4 py-2 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md"
-        >
-          <Text className="text-[11px] font-black uppercase tracking-wider text-primary">
-            Ready
-          </Text>
-        </Animated.View>
+        <View className="w-10 h-8" />
       )}
     </Animated.View>
   );
-}
+};

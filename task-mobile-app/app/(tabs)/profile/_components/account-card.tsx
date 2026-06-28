@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { AuthDataHook } from "@/lib/data-hooks/auth";
 import { LogOut, Settings } from "lucide-react-native";
 
@@ -13,14 +13,16 @@ interface IAccountCardProps {}
 
 export const AccountCard: React.FC<IAccountCardProps> = () => {
   const router = useRouter();
-  const { theme } = useTheme();
   const { mutateAsync: logoutUser, isPending: isLoggingOut } =
     AuthDataHook.useLogout();
 
   const handleSignOut = async () => {
     try {
       await logoutUser();
-      router.replace("/login");
+      // Small delay so navigator is fully ready in production APK builds
+      setTimeout(() => {
+        router.replace("/login");
+      }, 100);
     } catch (e) {
       console.error("Sign out failed", e);
     }
@@ -47,7 +49,7 @@ export const AccountCard: React.FC<IAccountCardProps> = () => {
           disabled={isLoggingOut}
           className="justify-start gap-3 px-3 h-12 rounded-2xl"
         >
-          <LogOut size={18} color={theme.destructive} />
+          <Icon as={LogOut} className="text-destructive" size={18} />
           <Text className="text-sm font-semibold">Sign Out</Text>
         </Button>
       </CardContent>

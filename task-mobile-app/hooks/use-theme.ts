@@ -1,22 +1,11 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { THEME } from '@/lib/theme';
-
 /**
- * Single-import theme hook — replaces the dual
- * `useColorScheme` + `THEME[colorScheme]` pattern.
+ * useTheme hook — re-exported from ThemeContext for backward compatibility.
  *
- * Usage:
- *   const { theme, colorScheme } = useTheme();
- *   const { theme, colorScheme, setColorScheme, toggleColorScheme } = useTheme();
+ * Iska matlab: purani files jo `@/hooks/use-theme` se import karti hain
+ * wo bina kisi change ke kaam karengi. Internally ab React Context use hota hai
+ * jo theme ek baar root me compute karta hai.
+ *
+ * Source of truth: @/context/ThemeContext.tsx
  */
-export function useTheme() {
-  const { colorScheme, setColorScheme, toggleColorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
-
-  return {
-    colorScheme,
-    theme,
-    setColorScheme,
-    toggleColorScheme,
-  };
-}
+export { useTheme } from '@/context/ThemeContext';
+export type { ThemeContextValue, ThemeColors } from '@/context/ThemeContext';

@@ -34,7 +34,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { formatLocalDate, parseLocalDate } from "@/lib/date";
 import { TEditTask, ZEditTask } from "@/lib/zod/tasks/edit";
@@ -49,7 +49,6 @@ const EditTaskScreen: React.FC = () => {
 
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { theme } = useTheme();
 
   // ── Saare hooks pehle — task?.x se safe defaults ──
   const [triggerWidth, setTriggerWidth] = useState(0);
@@ -321,7 +320,7 @@ const EditTaskScreen: React.FC = () => {
                 className="h-11 w-11 bg-primary rounded-xl items-center justify-center shadow-lg shadow-primary/20"
                 disabled={isLoading}
               >
-                <Plus size={18} color={theme.primaryForeground} />
+                <Icon as={Plus} className="text-primary-foreground" size={18} />
               </Button>
             </View>
             {formSteps.length > 0 && (
@@ -368,7 +367,7 @@ const EditTaskScreen: React.FC = () => {
               disabled={isLoading}
             >
               {isLoading && (
-                <Spinner size={16} color={theme.primaryForeground} />
+                <Spinner size={16} className="text-primary-foreground" />
               )}
               <Text className="font-bold text-base text-primary-foreground">
                 Update Task

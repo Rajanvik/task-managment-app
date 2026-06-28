@@ -36,7 +36,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 
 // State, schemas, and types
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { formatLocalDate, parseLocalDate } from "@/lib/date";
 import { TCreateTask, ZCreateTask } from "@/lib/zod/tasks"; // index.ts se
@@ -49,7 +49,6 @@ interface IAddTaskScreenProps {}
 const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { theme } = useTheme();
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -306,7 +305,7 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
                 className="h-11 w-11 bg-primary rounded-xl items-center justify-center shadow-lg shadow-primary/20"
                 disabled={isLoading}
               >
-                <Plus size={18} color={theme.primaryForeground} />
+                <Icon as={Plus} className="text-primary-foreground" size={18} />
               </Button>
             </View>
             {formSteps.length > 0 && (
@@ -354,7 +353,7 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
               disabled={isLoading}
             >
               {isLoading && (
-                <Spinner size={16} color={theme.primaryForeground} />
+                <Spinner size={16} className="text-primary-foreground" />
               )}
               <Text className="font-bold text-base text-primary-foreground">
                 Add Task

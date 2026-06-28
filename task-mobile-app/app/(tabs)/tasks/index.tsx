@@ -5,7 +5,7 @@ import { Pressable, ScrollView, View } from "react-native";
 
 import { AnimatedReveal } from "@/components/ui/animated-reveal";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { Task } from "@/lib/types/tasks";
 
@@ -21,8 +21,6 @@ type TFilter = "All" | "Work" | "Personal" | "Urgent";
 interface ITasksScreenProps {}
 
 const TasksScreen: React.FC<ITasksScreenProps> = () => {
-  // Theme colors aur navigation router
-  const { theme } = useTheme();
   const router = useRouter();
 
   // User ne kaunsa category filter select kiya — default 'All'
@@ -127,7 +125,7 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
                 onPress={() => router.push("/tasks/add" as any)}
                 className="h-11 w-11 bg-primary rounded-2xl items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.96] mt-1"
               >
-                <Plus color={theme.primaryForeground} size={22} />
+                <Icon as={Plus} className="text-primary-foreground" size={22} />
               </Pressable>
             </View>
 

@@ -4,31 +4,32 @@ import { ExploreHeader } from './_components/explore-header';
 import { FeatureCard } from './_components/feature-card';
 import { GetStartedCard } from './_components/get-started-card';
 import { AnimatedReveal } from '@/components/ui/animated-reveal';
+import { ListTodo, BarChart2, Home, User } from 'lucide-react-native';
 
 const EXPLORE_FEATURES = [
   {
     id: '1',
     title: 'Smart Task Organization',
     description: 'Organize your workflow using subtasks, color-coded categories, and flexible status tracking.',
-    icon: 'list.bullet',
+    icon: ListTodo,
   },
   {
     id: '2',
     title: 'Productivity Analytics',
     description: 'Visualize your progress over time with completion rates and visual activity charts.',
-    icon: 'chart.bar.fill',
+    icon: BarChart2,
   },
   {
     id: '3',
     title: 'Interactive Dashboard',
     description: 'Stay on top of your daily schedule with a real-time clock, quick task summaries, and status badges.',
-    icon: 'house.fill',
+    icon: Home,
   },
   {
     id: '4',
     title: 'Seamless Personalization',
     description: 'Customize your profile, configure preferences, and switch smoothly between dark and light modes.',
-    icon: 'person.fill',
+    icon: User,
   },
 ] as const;
 

@@ -43,10 +43,12 @@ const RegisterScreen: React.FC<IRegisterScreenProps> = () => {
 
   // 🔍 STEP 1: useRegister Hook call karo aur data save ke lifecycle events handle karo
   const { mutate, isPending } = AuthDataHook.useRegister({
-    // 👉 onSuccess: Jab account register ho jayega
     onSuccess: () => {
-      router.replace("/login"); // 1. Login screen page par navigate karo
-      form.reset(); // 2. Form fields clear/reset karo
+      form.reset(); // Form fields clear/reset karo
+      // Small delay so navigator is fully ready in production APK builds
+      setTimeout(() => {
+        router.replace("/login"); // Login screen par navigate karo
+      }, 100);
     },
   });
 

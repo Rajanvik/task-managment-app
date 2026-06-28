@@ -11,7 +11,7 @@ import { Pressable, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { parseLocalDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { type Task } from "@/lib/types/tasks";
@@ -29,7 +29,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onOptionsPress,
   disabled,
 }) => {
-  const { theme } = useTheme();
 
   const isCompleted = task.status === "Completed";
 
@@ -57,7 +56,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               className={`p-0.5 mt-0.5 ${disabled ? "opacity-50" : ""}`}
             >
               {isCompleted ? (
-                <CheckCircle2 size={21} color={theme.primary} />
+                <Icon as={CheckCircle2} className="text-primary" size={21} />
               ) : (
                 <Circle size={21} color="gray" />
               )}
@@ -153,7 +152,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {/* 3. Steps Checklist Progress Pill */}
           {hasSteps && (
             <View className="bg-primary/[0.04] border border-primary/15 px-2 py-0.5 rounded-lg flex-row items-center gap-1">
-              <ListTodo size={11} color={theme.primary} />
+              <Icon as={ListTodo} className="text-primary" size={11} />
               <Text className="text-[11px] text-primary/70 font-bold">
                 {completedSteps}/{totalSteps} Steps
               </Text>

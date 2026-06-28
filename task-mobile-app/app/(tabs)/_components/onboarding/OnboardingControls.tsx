@@ -4,12 +4,12 @@ import Animated, {
   Layout, 
   useAnimatedStyle, 
   useSharedValue, 
-  withSpring, 
-  withTiming 
+  withSpring 
 } from 'react-native-reanimated';
 import { ChevronRight, Check } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
+import { Icon } from '@/components/ui/icon';
 import * as Haptics from 'expo-haptics';
 
 interface OnboardingControlsProps {
@@ -18,11 +18,6 @@ interface OnboardingControlsProps {
   onDotPress: (index: number) => void;
   onNext: () => void;
   colorScheme: 'light' | 'dark';
-  theme: {
-    primary: string;
-    primaryForeground: string;
-    background: string;
-  };
 }
 
 export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
@@ -31,7 +26,6 @@ export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
   onDotPress,
   onNext,
   colorScheme,
-  theme,
 }) => {
   const insets = useSafeAreaInsets();
   const isLastSlide = currentIndex === totalSlides - 1;
@@ -75,12 +69,13 @@ export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
             >
               <Animated.View
                 layout={Layout.springify().damping(16).stiffness(110)}
-                className="h-2 rounded-full"
+                className={`h-2 rounded-full ${
+                  isSelected 
+                    ? 'bg-primary' 
+                    : (colorScheme === 'dark' ? 'bg-zinc-800' : 'bg-zinc-200')
+                }`}
                 style={{
                   width: isSelected ? 28 : 8,
-                  backgroundColor: isSelected 
-                    ? theme.primary 
-                    : (colorScheme === 'dark' ? '#27272a' : '#e4e4e7'),
                 }}
               />
             </Pressable>
@@ -109,13 +104,13 @@ export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
           {/* Mini rounded badge for icons */}
           <View className="h-5 w-5 rounded-full items-center justify-center ml-1 bg-primary-foreground shadow-sm">
             {isLastSlide ? (
-              <Check size={10} color={theme.primary} strokeWidth={4.5} />
+              <Icon as={Check} className="text-primary" size={10} strokeWidth={4.5} />
             ) : (
-              <ChevronRight size={10} color={theme.primary} strokeWidth={4.5} />
+              <Icon as={ChevronRight} className="text-primary" size={10} strokeWidth={4.5} />
             )}
           </View>
         </Pressable>
       </Animated.View>
     </View>
   );
-}
+};

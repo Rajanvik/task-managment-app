@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { parseLocalDate } from "@/lib/date";
 import type { SubTask } from "@/lib/types/tasks";
@@ -98,7 +98,6 @@ interface ITaskDetailsScreenProps {}
 const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { theme } = useTheme();
   const { data: task, isLoading: isTaskLoading } = TaskDataHook.useGetTask({
     id: String(id),
   });
@@ -139,7 +138,7 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
   if (isTaskLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center p-6 gap-3">
-        <Spinner size={32} color={theme.primary} />
+        <Spinner size={32} className="text-primary" />
         <Text className="text-sm font-semibold text-muted-foreground">
           Loading task details...
         </Text>
@@ -211,7 +210,7 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
           onPress={() => router.back()}
           className="bg-card border border-border rounded-full h-11 w-11 shadow-lg shadow-black/15 flex items-center justify-center"
         >
-          <ChevronLeft color={theme.foreground} size={20} />
+          <Icon as={ChevronLeft} className="text-foreground" size={20} />
         </Button>
         <View className="bg-card px-4 py-2 rounded-full border border-border shadow-md">
           <Text className="text-sm font-bold text-foreground tracking-wide">
@@ -250,7 +249,7 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
           <View className="flex-row items-center gap-4 bg-secondary/30 border border-border/5 rounded-[28px] p-4 mb-6">
             <View className="flex-1 flex-row items-center gap-3">
               <View className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center">
-                <Calendar size={18} color={theme.primary} />
+                <Icon as={Calendar} className="text-primary" size={18} />
               </View>
               <View>
                 <Text className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">
@@ -295,7 +294,7 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
           {/* TASK DESCRIPTION */}
           <View className="mb-6 bg-card border border-border/40 rounded-[28px] p-5 shadow-sm shadow-black/5">
             <View className="flex-row items-center gap-2 mb-3.5">
-              <FileText size={18} color={theme.primary} />
+              <Icon as={FileText} className="text-primary" size={18} />
               <Text className="text-base font-bold text-foreground">
                 Task Overview
               </Text>
@@ -310,7 +309,7 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
           {steps.length > 0 && (
             <View className="mb-8 bg-card border border-border/40 rounded-[28px] p-5 shadow-sm shadow-black/5">
               <View className="flex-row items-center gap-2 mb-4">
-                <CheckSquare size={18} color={theme.primary} />
+                <Icon as={CheckSquare} className="text-primary" size={18} />
                 <Text className="text-base font-bold text-foreground">
                   Execution Steps
                 </Text>
@@ -365,9 +364,10 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
               disabled={isUpdating}
               className={`h-14 rounded-2xl flex-row gap-2.5 shadow-xl ${isCompleted ? "bg-secondary border border-border/30 shadow-black/5" : "bg-primary shadow-primary/20"} ${isUpdating ? "opacity-50" : ""}`}
             >
-              <CheckCircle2
+              <Icon
+                as={CheckCircle2}
                 size={20}
-                color={isCompleted ? theme.foreground : theme.primaryForeground}
+                className={isCompleted ? "text-foreground" : "text-primary-foreground"}
               />
               <Text
                 className={`font-bold text-base ${isCompleted ? "text-foreground" : "text-primary-foreground"}`}

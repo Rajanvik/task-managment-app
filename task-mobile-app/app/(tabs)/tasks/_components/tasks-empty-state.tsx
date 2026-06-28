@@ -3,7 +3,7 @@ import { View, Pressable } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Text } from '@/components/ui/text';
-import { useTheme } from '@/hooks/use-theme';
+import { Icon } from '@/components/ui/icon';
 import { EmptyStateIllustration } from './empty-state-illustration';
 
 type TCategory = 'All' | 'Work' | 'Personal' | 'Urgent';
@@ -33,7 +33,6 @@ interface ITasksEmptyStateProps {
 
 export const TasksEmptyState: React.FC<ITasksEmptyStateProps> = ({ filter }) => {
   const router = useRouter();
-  const { theme } = useTheme();
   const { title, description } = EMPTY_CONTENT[filter];
 
   return (
@@ -53,7 +52,7 @@ export const TasksEmptyState: React.FC<ITasksEmptyStateProps> = ({ filter }) => 
         onPress={() => router.push('/tasks/add' as any)}
         className="mt-6 px-5 py-2.5 bg-secondary/50 dark:bg-secondary/10 border border-border/40 rounded-full active:scale-95 flex-row items-center gap-2"
       >
-        <Plus size={14} color={theme.foreground} />
+        <Icon as={Plus} className="text-foreground" size={14} />
         <Text className="text-xs font-bold text-foreground">Add first task</Text>
       </Pressable>
     </View>

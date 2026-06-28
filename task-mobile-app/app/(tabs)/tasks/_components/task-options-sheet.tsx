@@ -4,6 +4,7 @@ import { Pressable, View } from "react-native";
 
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Text } from "@/components/ui/text";
+import { Icon } from "@/components/ui/icon";
 import { type Task } from "@/lib/types/tasks";
 
 interface TaskOptionsSheetProps {
@@ -23,8 +24,6 @@ export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const { theme } = useTheme();
-
   if (!task) return null;
 
   return (
@@ -42,7 +41,7 @@ export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
           className="flex-1 items-center justify-center py-4 bg-secondary/10 active:bg-secondary/25 rounded-2xl border border-border/40"
         >
           <View className="w-9 h-9 rounded-xl bg-secondary/30 border border-border/40 items-center justify-center mb-1.5">
-            <Eye size={16} color={theme.foreground} />
+            <Icon as={Eye} className="text-foreground" size={16} />
           </View>
           <Text className="text-xs font-bold text-foreground">View</Text>
         </Pressable>
@@ -53,7 +52,7 @@ export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
           className="flex-1 items-center justify-center py-4 bg-secondary/10 active:bg-secondary/25 rounded-2xl border border-border/40"
         >
           <View className="w-9 h-9 rounded-xl bg-secondary/30 border border-border/40 items-center justify-center mb-1.5">
-            <Pencil size={15} color={theme.foreground} />
+            <Icon as={Pencil} className="text-foreground" size={15} />
           </View>
           <Text className="text-xs font-bold text-foreground">Edit</Text>
         </Pressable>
@@ -64,7 +63,7 @@ export const TaskOptionsSheet: React.FC<TaskOptionsSheetProps> = ({
           className="flex-1 items-center justify-center py-4 bg-destructive/[0.03] active:bg-destructive/15 rounded-2xl border border-destructive/15"
         >
           <View className="w-9 h-9 rounded-xl bg-destructive/10 border border-destructive/20 items-center justify-center mb-1.5">
-            <Trash2 size={16} color="#ef4444" />
+            <Icon as={Trash2} className="text-destructive" size={16} />
           </View>
           <Text className="text-xs font-bold text-destructive">Delete</Text>
         </Pressable>

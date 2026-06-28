@@ -3,7 +3,7 @@ import { View, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { cn } from '@/lib/utils';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from 'nativewind';
 import { THEME } from '@/lib/theme';
 
 export interface CalendarProps {
@@ -18,7 +18,7 @@ export interface CalendarProps {
 export function Calendar({ value, onChange, selected, onSelect, mode, className }: CalendarProps) {
   const selectedDate = selected || value || new Date();
   const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme];
+  const theme = THEME[colorScheme || 'light'];
   
   // Local state for the displayed month and year
   const [currentDate, setCurrentDate] = React.useState(new Date(selectedDate));

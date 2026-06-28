@@ -5,6 +5,7 @@ import { Target, Trophy, Sparkles } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Icon } from '@/components/ui/icon';
 
 interface ProgressCardProps {
   completedTasks: number;
@@ -12,7 +13,6 @@ interface ProgressCardProps {
 }
 
 export function ProgressCard({ completedTasks, progressPercentage }: ProgressCardProps) {
-  const { theme } = useTheme();
   const isFinished = progressPercentage === 100;
 
   return (
@@ -78,7 +78,7 @@ export function ProgressCard({ completedTasks, progressPercentage }: ProgressCar
         {/* Compact Footer with Crisp and Increased Size for Motivation Message */}
         <View className="flex-row items-center gap-1.5 border-t border-border/10 pt-1.5 mt-0.5">
           <View className="h-4.5 w-4.5 bg-primary/10 rounded-full items-center justify-center">
-            <Sparkles size={9} color={theme.primary} />
+            <Icon as={Sparkles} className="text-primary" size={9} />
           </View>
           <Text className="text-xs text-muted-foreground font-bold flex-1 leading-snug">
             {isFinished

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from 'nativewind';
 
 interface IBackgroundBlobsProps {}
 

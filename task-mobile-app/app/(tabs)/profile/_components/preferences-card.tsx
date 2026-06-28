@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Bell, Moon, Sun, User } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import { registerForNotificationsAsync, cancelAllReminders } from '@/lib/notifications';
 import { toast } from '@/lib/toast';
 
@@ -13,7 +14,7 @@ interface IPreferencesCardProps {}
 export const PreferencesCard: React.FC<IPreferencesCardProps> = () => {
   const [notifications, setNotifications] = React.useState(true);
   const [profileVisibility, setProfileVisibility] = React.useState(true);
-  const { colorScheme, setColorScheme } = useTheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   const toggleTheme = (value: boolean) => {

@@ -6,7 +6,7 @@ import { Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
-import { useTheme } from "@/hooks/use-theme";
+import { Icon } from "@/components/ui/icon";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import {
   cancelAllReminders,
@@ -18,7 +18,6 @@ import { toast } from "@/lib/toast";
 import type { Task } from "@/lib/types/tasks";
 
 export function ReminderCard() {
-  const { theme } = useTheme();
   const { data: tasks = [] } = TaskDataHook.useGetTasks();
 
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);
@@ -90,7 +89,7 @@ export function ReminderCard() {
         {/* Header Section */}
         <View className="flex-row items-center gap-3 mb-4">
           <View className="h-10 w-10 bg-primary/10 rounded-2xl items-center justify-center">
-            <Bell size={21} color={theme.primary} />
+            <Icon as={Bell} className="text-primary" size={21} />
           </View>
           <View className="flex-1">
             <Text className="text-lg font-bold text-foreground">

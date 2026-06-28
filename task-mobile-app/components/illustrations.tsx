@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { Path, Circle, Rect, G, Defs, LinearGradient, Stop } from 'react-native-svg';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from 'nativewind';
 import { THEME } from '@/lib/theme';
 
 interface IllustrationProps {
@@ -51,8 +51,9 @@ function parseHsl(hslString: string): string {
   return `rgb(${ri}, ${gi}, ${bi})`;
 }
 
-const getIllustrationColors = (colorScheme: 'light' | 'dark') => {
-  const theme = THEME[colorScheme || 'light'];
+const getIllustrationColors = (colorScheme: 'light' | 'dark' | undefined) => {
+  const scheme = colorScheme || 'light';
+  const theme = THEME[scheme];
   
   return {
     primary: parseHsl(theme.primary),
@@ -60,7 +61,7 @@ const getIllustrationColors = (colorScheme: 'light' | 'dark') => {
     accent: parseHsl(theme.secondary),
     border: parseHsl(theme.border),
     cardBg: parseHsl(theme.card),
-    highlight: colorScheme === 'dark' ? '#f59e0b' : '#d97706', // Beautiful warm amber focal point
+    highlight: scheme === 'dark' ? '#f59e0b' : '#d97706', // Beautiful warm amber focal point
   };
 };
 
