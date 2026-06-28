@@ -39,13 +39,18 @@ const LoginScreen: React.FC<ILoginScreenProps> = () => {
   });
 
   // 🔍 STEP 1: useLogin Hook call karo aur data save ke lifecycle events handle karo
-  // IMPORTANT: Yahan se KABHI direct router.replace NAHI karte.
-  // AuthService.login() AsyncStorage me token save karta hai.
-  // useRouteGuard (in _layout.tsx) segments change detect karke automatically /home redirect kar deta hai.
-  // Agar yahan bhi router.replace karein toh DOUBLE NAVIGATION hoti hai jo production APK crash karta hai.
+  // Login success ke baad /home par navigate karo.
+  // useRouteGuard DOUBLE navigate nahi karta kyunki:
+  //   - Yahan navigate karte hain → segments change hokar (tabs)/home ban jaate hain
+  //   - useRouteGuard home pe check karta hai → condition false (not isRoot, not inAuthGroup) → kuch nahi karta
+  // isliye production APK me crash nahi hoga.
   const { mutate, isPending } = AuthDataHook.useLogin({
     onSuccess: () => {
-      form.reset(); // Form input values ko reset/clear karo — navigation useRouteGuard handle karega
+      form.reset(); // Form inputs clear karo
+      // Production APK me navigator fully mount hone ka wait karo, phir navigate karo
+      setTimeout(() => {
+        router.replace('/home' as any);
+      }, 200);
     },
   });
 

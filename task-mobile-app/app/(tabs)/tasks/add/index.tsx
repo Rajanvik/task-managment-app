@@ -128,12 +128,12 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
                 </FormLabel>
                 <FormControl>
                   <Input
+                    variant="soft"
                     placeholder="e.g. Design meeting"
                     value={field.value}
                     onChangeText={field.onChange}
                     onBlur={field.onBlur}
                     editable={!isLoading}
-                    className="h-11 border-none bg-secondary/20 rounded-xl px-4 text-base"
                   />
                 </FormControl>
                 <FormMessage />
@@ -211,6 +211,7 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
                 </FormLabel>
                 <FormControl>
                   <Input
+                    variant="soft"
                     placeholder="Details..."
                     value={field.value || ""}
                     onChangeText={field.onChange}
@@ -218,8 +219,6 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
                     editable={!isLoading}
                     multiline
                     numberOfLines={3}
-                    className="h-24 border-none bg-secondary/20 rounded-xl px-4 py-3 text-sm"
-                    textAlignVertical="top"
                   />
                 </FormControl>
                 <FormMessage />
@@ -294,11 +293,12 @@ const AddTaskScreen: React.FC<IAddTaskScreenProps> = () => {
             </Text>
             <View className="flex-row gap-2">
               <Input
+                variant="soft"
                 placeholder="Add step..."
                 value={newStepText}
                 onChangeText={setNewStepText}
                 editable={!isLoading}
-                className="flex-1 h-11 border-none bg-secondary/20 rounded-xl px-4 text-base"
+                className="flex-1"
               />
               <Button
                 onPress={handleAddStep}

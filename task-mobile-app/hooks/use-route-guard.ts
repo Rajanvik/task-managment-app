@@ -7,12 +7,11 @@ import { AUTH_KEYS } from '@/lib/axios-instance';
  * Route guarding middleware for Expo Router.
  * Handles automatic redirection based on onboarding and authentication state.
  *
- * FIX: Strong navigation lock added to prevent double-navigation crash in production APK builds.
- * Problem was: login screen was ALSO calling router.replace('/home') in onSuccess at the same
- * time as useRouteGuard — causing a fatal "navigator not ready" / concurrent navigation crash.
- *
- * Solution: Remove router.replace from login/register screens entirely.
- * Only useRouteGuard navigates. isNavigating ref ensures only ONE navigation happens at a time.
+ * NAVIGATION FLOW:
+ * - Login screen navigates to /home after successful login (onSuccess → router.replace)
+ * - useRouteGuard protects routes: unauthenticated users → /login, onboarding pending → /
+ * - On home page: inAuthGroup=false, isRoot=false → NO navigation triggered (no double nav)
+ * - lastDestination ref prevents duplicate navigation to same route
  */
 export function useRouteGuard(isLoaded: boolean) {
   const router = useRouter();

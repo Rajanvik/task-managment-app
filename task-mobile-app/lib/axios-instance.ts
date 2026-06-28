@@ -1,6 +1,5 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
 
 /**
  * Storage keys for authentication state.
@@ -49,7 +48,10 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     
     // Check if the request is to an authentication endpoint
-    const isAuthRoute = originalRequest?.url?.includes('/auth/login') || originalRequest?.url?.includes('/auth/register');
+    const isAuthRoute =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/refresh-token');
 
     // Handle 401 Unauthorized errors (e.g. token expired)
     if (error.response?.status === 401 && !originalRequest?._retry && !isAuthRoute) {
@@ -79,14 +81,22 @@ axiosInstance.interceptors.response.use(
           return axiosInstance(originalRequest);
         }
       } catch (refreshError) {
-        // If refresh fails, clear all stored tokens and redirect to login
+        // CRITICAL FIX:
+        // Pehle yahan router.replace('/login') call hota tha — jo CRASH ka asli wajah tha.
+        // Axios interceptor React component lifecycle ke BAHAR run karta hai.
+        // Wahan se router.replace call karne se internet ON hone par production APK crash karta tha:
+        //   "Task Management keeps stopping"
+        //
+        // FIX: Sirf tokens clear karo aur error propagate karo.
+        // useRouteGuard (_layout.tsx me) token missing detect karke
+        // safely React lifecycle ke ANDAR se /login redirect karega.
+        console.warn('Axios Interceptor: Refresh token expired — clearing session.');
         await AsyncStorage.multiRemove([
           AUTH_KEYS.ACCESS_TOKEN,
           AUTH_KEYS.REFRESH_TOKEN,
-          AUTH_KEYS.USER_DATA
+          AUTH_KEYS.USER_DATA,
         ]);
 
-        router.replace('/login');
         return Promise.reject(refreshError);
       }
     }
