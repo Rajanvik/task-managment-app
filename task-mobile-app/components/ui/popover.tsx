@@ -55,7 +55,7 @@ export function PopoverTrigger({
   asChild?: boolean;
 }) {
   const context = usePopoverContext();
-  const child = React.Children.only(children);
+  const child = React.Children.only(children) as React.ReactElement<any>;
 
   return React.cloneElement(child, {
     onPress: (e: any) => {
