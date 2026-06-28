@@ -313,7 +313,7 @@ const EditTaskScreen: React.FC = () => {
                 value={newStepText}
                 onChangeText={setNewStepText}
                 editable={!isLoading}
-                className="flex-1"
+                className="flex-1 w-auto"
               />
               <Button
                 onPress={handleAddStep}

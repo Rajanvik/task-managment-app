@@ -23,15 +23,16 @@ function Input({
     <View
       className={cn(
         // Base layout
-        "relative flex-row w-full items-center rounded-xl px-4",
+        "relative flex-row items-center rounded-xl px-4",
         // Variant styles
-        variant === 'default' && "bg-card border border-border h-12",
-        variant === 'soft'   && "bg-secondary/20 border-none",
+        variant === 'default' && "bg-card border border-border h-12 w-full",
+        variant === 'soft'   && "bg-secondary/20 border border-border/40 w-full",
         // Multiline height
         multiline ? "min-h-[60px] items-start py-3" : "h-11",
         // States
         isInvalid && "border-destructive bg-destructive/5",
         props.editable === false && "opacity-50",
+        className
       )}
     >
       {IconComponent && (
@@ -43,10 +44,7 @@ function Input({
       )}
       <TextInput
         multiline={multiline}
-        className={cn(
-          "flex-1 text-foreground text-sm border-0 h-full shadow-none bg-transparent",
-          className
-        )}
+        className="flex-1 text-foreground text-sm border-0 h-full shadow-none bg-transparent"
         placeholderTextColor="#a1a1aa"
         textAlignVertical={multiline ? 'top' : 'auto'}
         {...props}
