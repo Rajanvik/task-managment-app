@@ -49,7 +49,7 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
   // selectedTaskId string se pura Task object nikalo — tasks list me se
   // useMemo: sirf tab recalculate karo jab tasks ya selectedTaskId change ho
   const selectedTask = React.useMemo(
-    () => tasks.find((t) => t.id === selectedTaskId) ?? null,
+    () => (Array.isArray(tasks) ? tasks.find((t) => t.id === selectedTaskId) : null) ?? null,
     [tasks, selectedTaskId],
   );
 
@@ -57,8 +57,9 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
   // useMemo: sirf tab recalculate karo jab tasks array change ho
   const { totalTasks, completedTasks, progressPercentage } =
     React.useMemo(() => {
-      const total = tasks.length;
-      const completed = tasks.filter((t) => t.status === "Completed").length;
+      const arr = Array.isArray(tasks) ? tasks : [];
+      const total = arr.length;
+      const completed = arr.filter((t) => t.status === "Completed").length;
       const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
       return {
         totalTasks: total,
@@ -160,7 +161,7 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
 
           {/* Task list ya empty state */}
           <AnimatedReveal variant="slide-up" delay={250} duration={500}>
-            {tasks.length === 0 ? (
+            {!Array.isArray(tasks) || tasks.length === 0 ? (
               // Koi task nahi — illustration + message + add button dikhao
               <TasksEmptyState filter={filter} />
             ) : (

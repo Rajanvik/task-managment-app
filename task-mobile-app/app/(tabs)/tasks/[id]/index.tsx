@@ -106,7 +106,8 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
 
   const toggleSubTask = (taskId: string, subTaskId: string) => {
     if (!task) return;
-    const updatedSteps = task.steps.map((step: any) => {
+    const taskSteps = Array.isArray(task.steps) ? task.steps : [];
+    const updatedSteps = taskSteps.map((step: any) => {
       if (step.id === subTaskId) {
         return { ...step, completed: !step.completed };
       }
@@ -159,7 +160,8 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
     );
   }
 
-  const { title, description, category, status, dueDate, steps = [] } = task;
+  const { title, description, category, status, dueDate } = task;
+  const steps = Array.isArray(task.steps) ? task.steps : [];
   const isCompleted = status === "Completed";
 
   // Custom styling colors based on Category

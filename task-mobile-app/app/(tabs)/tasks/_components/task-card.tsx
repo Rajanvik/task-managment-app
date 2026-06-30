@@ -33,11 +33,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const isCompleted = task.status === "Completed";
 
   // Calculate dynamic subtask steps progress
-  const hasSteps = task.steps && task.steps.length > 0;
+  const hasSteps = Array.isArray(task.steps) && task.steps.length > 0;
   const completedSteps = hasSteps
-    ? task.steps!.filter((s) => s.completed).length
+    ? task.steps.filter((s) => s.completed).length
     : 0;
-  const totalSteps = hasSteps ? task.steps!.length : 0;
+  const totalSteps = hasSteps ? task.steps.length : 0;
 
   return (
     <View className="mb-3">

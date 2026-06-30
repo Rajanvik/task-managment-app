@@ -19,10 +19,10 @@ const HomeScreen: React.FC<IHomeScreenProps> = () => {
   // Dashboard analytics API se seedha stats lo — client-side calculations ki zarurat nahi
   const { data: analytics } = DashboardDataHook.useDashboardAnalytics();
 
-  const completedTasks = analytics?.summary.completedTasks ?? 0;
-  const pendingTasks = analytics?.summary.pendingTasks ?? 0;
-  const totalTasks = analytics?.summary.totalTasks ?? 0;
-  const progressPercentage = analytics?.summary.taskCompletionRate ?? 0;
+  const completedTasks = analytics?.summary?.completedTasks ?? 0;
+  const pendingTasks = analytics?.summary?.pendingTasks ?? 0;
+  const totalTasks = analytics?.summary?.totalTasks ?? 0;
+  const progressPercentage = analytics?.summary?.taskCompletionRate ?? 0;
 
   return (
     <Animated.View entering={FadeIn.duration(700)} className="flex-1 bg-background">

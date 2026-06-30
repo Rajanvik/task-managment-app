@@ -13,7 +13,7 @@ export const AUTH_KEYS = {
 /**
  * API base URL — single endpoint for all platforms.
  */
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://task-managment-app-liart.vercel.app/api';
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,

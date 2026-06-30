@@ -23,6 +23,7 @@ export function RecentTasksList() {
 
   // Get up to 3 most important pending or recently updated tasks
   const displayTasks = React.useMemo(() => {
+    if (!Array.isArray(tasks)) return [];
     // Show pending tasks first, then completed ones
     const pending = tasks.filter((t: Task) => t.status === "Pending");
     const completed = tasks.filter((t: Task) => t.status === "Completed");
@@ -47,7 +48,7 @@ export function RecentTasksList() {
           </View>
         </View>
 
-        {tasks.length > 0 && (
+        {Array.isArray(tasks) && tasks.length > 0 && (
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

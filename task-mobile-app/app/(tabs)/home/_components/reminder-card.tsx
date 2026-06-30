@@ -24,7 +24,7 @@ export function ReminderCard() {
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const pendingTasks = tasks.filter((t: Task) => t.status === "Pending");
+  const pendingTasks = Array.isArray(tasks) ? tasks.filter((t: Task) => t.status === "Pending") : [];
   const pendingCount = pendingTasks.length;
   const pendingTitles = pendingTasks.map((t: Task) => t.title);
 
