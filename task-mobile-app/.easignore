@@ -1,0 +1,22 @@
+# Ignore directories that are managed by the build system or package managers
+node_modules/
+.expo/
+dist/
+
+# Ignore native builds (EAS builds them dynamically on the cloud)
+android/
+ios/
+
+# Ignore local configurations, editor files, and environment files
+.vscode/
+.idea/
+.claude/
+.env*.local
+
+# Ignore compiled artifacts and binary builds
+*.apk
+*.aab
+*.zip
+*.tar.gz
+*.tgz
+*.log
