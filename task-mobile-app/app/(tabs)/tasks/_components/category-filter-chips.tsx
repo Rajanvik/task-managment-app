@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, View, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type TCategory = 'All' | 'Work' | 'Personal' | 'Urgent';
 const CATEGORIES: TCategory[] = ['All', 'Work', 'Personal', 'Urgent'];
@@ -9,9 +10,25 @@ const CATEGORIES: TCategory[] = ['All', 'Work', 'Personal', 'Urgent'];
 interface ICategoryFilterChipsProps {
   active: TCategory;
   onChange: (cat: TCategory) => void;
+  isLoading?: boolean;
 }
 
-export const CategoryFilterChips: React.FC<ICategoryFilterChipsProps> = ({ active, onChange }) => {
+export const CategoryFilterChips: React.FC<ICategoryFilterChipsProps> = ({ active, onChange, isLoading }) => {
+  if (isLoading) {
+    return (
+      <View className="mb-5">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingRight: 20 }}
+        >
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <Skeleton key={idx} className="h-8 w-16 rounded-2xl mr-2" />
+          ))}
+        </ScrollView>
+      </View>
+    );
+  }
   return (
     <View className="mb-5">
       <ScrollView

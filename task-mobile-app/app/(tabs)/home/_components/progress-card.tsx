@@ -6,14 +6,56 @@ import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Icon } from '@/components/ui/icon';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProgressCardProps {
   completedTasks: number;
   progressPercentage: number;
+  isLoading?: boolean;
 }
 
-export function ProgressCard({ completedTasks, progressPercentage }: ProgressCardProps) {
+export function ProgressCard({ completedTasks, progressPercentage, isLoading }: ProgressCardProps) {
   const isFinished = progressPercentage === 100;
+
+  if (isLoading) {
+    return (
+      <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl overflow-hidden">
+        {/* Compact Decorative Background Accents */}
+        <View className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-6 -mt-6" />
+        <View className="absolute -bottom-8 -left-8 w-16 h-16 bg-green-500/5 rounded-full" />
+
+        <View className="p-5">
+          {/* Header section skeleton */}
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-2xl" />
+              <View className="gap-1.5 justify-center">
+                <Skeleton className="h-5 w-24 rounded-md" />
+                <Skeleton className="h-3 w-16 rounded-md" />
+              </View>
+            </View>
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </View>
+
+          {/* Progress Bar Container skeleton */}
+          <View className="bg-secondary/20 rounded-xl p-2.5 mb-2 border border-border/5 gap-2">
+            <View className="flex-row justify-between items-center mb-1">
+              <Skeleton className="h-4 w-28 rounded-md" />
+              <Skeleton className="h-5 w-8 rounded-md" />
+            </View>
+            <Skeleton className="h-2 w-full rounded-full" />
+            <Skeleton className="h-3.5 w-40 rounded-md mt-1" />
+          </View>
+
+          {/* Footer skeleton */}
+          <View className="flex-row items-center gap-1.5 border-t border-border/10 pt-2.5 mt-0.5">
+            <Skeleton className="h-4.5 w-4.5 rounded-full" />
+            <Skeleton className="h-4 flex-1 rounded-md" />
+          </View>
+        </View>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl overflow-hidden">

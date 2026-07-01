@@ -12,15 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { Icon } from "@/components/ui/icon";
+import { Skeleton } from "@/components/ui/skeleton";
 import { parseLocalDate } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { type Task } from "@/lib/types/tasks";
 
 interface TaskCardProps {
-  task: Task;
-  onToggle: () => void;
-  onOptionsPress: () => void;
+  task?: Task;
+  onToggle?: () => void;
+  onOptionsPress?: () => void;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -28,7 +30,30 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onToggle,
   onOptionsPress,
   disabled,
+  isLoading,
 }) => {
+  if (isLoading) {
+    return (
+      <View className="mb-3">
+        <Card className="bg-card border border-border/40 rounded-3xl px-3.5 pt-3.5 pb-2.5 shadow-sm shadow-black/5 gap-3">
+          <View className="flex-row items-start flex-1 gap-2.5">
+            <Skeleton className="h-5.5 w-5.5 rounded-full mt-0.5" />
+            <View className="flex-1 gap-1.5">
+              <Skeleton className="h-5 w-40 rounded-md" />
+              <Skeleton className="h-3.5 w-32 rounded-md" />
+            </View>
+          </View>
+          <View className="flex-row flex-wrap gap-1.5 border-t border-border/10 pt-2.5 mt-1">
+            <Skeleton className="h-5 w-14 rounded-lg" />
+            <Skeleton className="h-5 w-24 rounded-lg" />
+            <Skeleton className="h-5 w-20 rounded-lg" />
+          </View>
+        </Card>
+      </View>
+    );
+  }
+
+  if (!task) return null;
 
   const isCompleted = task.status === "Completed";
 

@@ -23,7 +23,7 @@ import { useEffect } from 'react';
 
 import { QueryClientProvider } from '@/providers/query-client-provider';
 import { useRouteGuard } from '@/hooks/use-route-guard';
-
+export { ErrorBoundary } from './error-boundary';
 // Ignore generic third-party Expo SDK push notification library notice on Expo Go
 LogBox.ignoreLogs([
   'expo-notifications: Android Push notifications',

@@ -13,13 +13,50 @@ import { NoTasksIllustration } from "@/components/illustrations";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { Icon } from "@/components/ui/icon";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { cn } from "@/lib/utils";
 import type { SubTask, Task } from "@/lib/types/tasks";
 
 export function RecentTasksList() {
   const router = useRouter();
-  const { data: tasks = [] } = TaskDataHook.useGetTasks();
+  const { data: tasks = [], isLoading } = TaskDataHook.useGetTasks();
+
+  if (isLoading) {
+    return (
+      <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl p-5 overflow-hidden">
+        {/* Header section skeleton */}
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-2xl" />
+            <View className="gap-1.5 justify-center">
+              <Skeleton className="h-5 w-28 rounded-md" />
+              <Skeleton className="h-3 w-16 rounded-md" />
+            </View>
+          </View>
+        </View>
+
+        {/* 3 Tasks Skeletons */}
+        <View className="gap-2.5">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <View key={idx} className="bg-secondary/40 border border-border/10 rounded-2xl px-4 pt-3.5 pb-3 gap-2">
+              <View className="flex-row items-start justify-between pb-2">
+                <View className="flex-1 gap-1.5">
+                  <Skeleton className="h-5 w-48 rounded-md" />
+                  <Skeleton className="h-4 w-32 rounded-md" />
+                </View>
+              </View>
+              <View className="flex-row flex-wrap gap-1.5 border-t border-border/10 pt-2.5">
+                <Skeleton className="h-5 w-12 rounded-lg" />
+                <Skeleton className="h-5 w-20 rounded-lg" />
+                <Skeleton className="h-5 w-16 rounded-lg" />
+              </View>
+            </View>
+          ))}
+        </View>
+      </Card>
+    );
+  }
 
   // Get up to 3 most important pending or recently updated tasks
   const displayTasks = React.useMemo(() => {

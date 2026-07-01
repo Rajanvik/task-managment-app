@@ -9,6 +9,7 @@ import { Text } from "@/components/ui/text";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   cancelAllReminders,
   registerForNotificationsAsync,
@@ -19,10 +20,55 @@ import { toast } from "@/lib/toast";
 import type { Task } from "@/lib/types/tasks";
 
 export function ReminderCard() {
-  const { data: tasks = [] } = TaskDataHook.useGetTasks();
+  const { data: tasks = [], isLoading } = TaskDataHook.useGetTasks();
 
   const [isDailyEnabled, setIsDailyEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  if (isLoading) {
+    return (
+      <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl overflow-hidden">
+        {/* Decorative Gradient Background Accents */}
+        <View className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-8 -mt-8" />
+        <View className="absolute -bottom-10 -left-10 w-24 h-24 bg-sky-500/5 rounded-full" />
+
+        <View className="p-6">
+          {/* Header section skeleton */}
+          <View className="flex-row items-center gap-3 mb-4">
+            <Skeleton className="h-10 w-10 rounded-2xl" />
+            <View className="flex-1 gap-1.5 justify-center">
+              <Skeleton className="h-5 w-40 rounded-md" />
+              <Skeleton className="h-3.5 w-24 rounded-md" />
+            </View>
+          </View>
+
+          {/* Status section skeleton */}
+          <View className="bg-secondary/40 border border-border/10 rounded-2xl p-4 mb-5 flex-row items-center justify-between gap-4">
+            <View className="flex-row items-center gap-3 flex-1">
+              <Skeleton className="h-2.5 w-2.5 rounded-full shrink-0" />
+              <View className="flex-1 gap-1.5">
+                <Skeleton className="h-4 w-32 rounded-md" />
+                <Skeleton className="h-3 w-48 rounded-md" />
+              </View>
+            </View>
+            <Skeleton className="h-8 w-20 rounded-xl" />
+          </View>
+
+          {/* Daily Schedule Toggle Option skeleton */}
+          <View className="flex-row items-center justify-between border-t border-border/10 pt-4">
+            <View className="flex-row items-center gap-3 flex-1 pr-4">
+              <Skeleton className="h-8 w-8 rounded-xl" />
+              <View className="flex-1 gap-1.5">
+                <Skeleton className="h-4 w-28 rounded-md" />
+                <Skeleton className="h-3 w-40 rounded-md" />
+              </View>
+            </View>
+            <Skeleton className="h-6 w-10 rounded-full" />
+          </View>
+        </View>
+      </Card>
+    );
+  }
 
   const pendingTasks = Array.isArray(tasks) ? tasks.filter((t: Task) => t.status === "Pending") : [];
   const pendingCount = pendingTasks.length;

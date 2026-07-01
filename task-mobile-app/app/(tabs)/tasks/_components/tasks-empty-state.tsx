@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyStateIllustration } from './empty-state-illustration';
 
 type TCategory = 'All' | 'Work' | 'Personal' | 'Urgent';
@@ -28,12 +29,36 @@ const EMPTY_CONTENT: Record<TCategory, { title: string; description: string }> =
 };
 
 interface ITasksEmptyStateProps {
-  filter: TCategory;
+  filter?: TCategory;
+  isLoading?: boolean;
 }
 
-export const TasksEmptyState: React.FC<ITasksEmptyStateProps> = ({ filter }) => {
+export const TasksEmptyState: React.FC<ITasksEmptyStateProps> = ({ filter = 'All', isLoading }) => {
   const router = useRouter();
-  const { title, description } = EMPTY_CONTENT[filter];
+  const { title, description } = isLoading ? { title: '', description: '' } : EMPTY_CONTENT[filter];
+
+  if (isLoading) {
+    return (
+      <View className="items-center justify-center py-6 px-4">
+        {/* Skeleton Illustration */}
+        <View className="items-center justify-center mb-6">
+          <Skeleton className="h-40 w-40 rounded-full" />
+        </View>
+
+        {/* Skeleton Title */}
+        <Skeleton className="h-7 w-64 rounded-md mt-1" />
+
+        {/* Skeleton Description */}
+        <View className="items-center gap-1.5 mt-3.5">
+          <Skeleton className="h-4 w-60 rounded-md" />
+          <Skeleton className="h-4 w-48 rounded-md" />
+        </View>
+
+        {/* Skeleton Button */}
+        <Skeleton className="mt-6 h-10 w-36 rounded-full" />
+      </View>
+    );
+  }
 
   return (
     <View className="items-center justify-center py-6 px-4">

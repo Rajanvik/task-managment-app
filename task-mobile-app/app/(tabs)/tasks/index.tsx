@@ -28,7 +28,7 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
 
   // Backend se tasks fetch karo — filter 'All' ho toh sab lo, warna sirf us category ke
   // Filter badlte hi React Query apne aap naya data fetch karta hai (queryKey me filter hai)
-  const { data: tasks = [] } = TaskDataHook.useGetTasks({
+  const { data: tasks = [], isLoading: isTasksLoading } = TaskDataHook.useGetTasks({
     category: filter === "All" ? undefined : filter,
   });
 
@@ -156,12 +156,16 @@ const TasksScreen: React.FC<ITasksScreenProps> = () => {
           {/* Category filter chips: All / Work / Personal / Urgent */}
           <AnimatedReveal variant="slide-right" delay={150} duration={400}>
             {/* active: abhi kaunsa filter selected, onChange: filter change hone par setFilter call */}
-            <CategoryFilterChips active={filter} onChange={setFilter} />
+            <CategoryFilterChips active={filter} onChange={setFilter} isLoading={isTasksLoading} />
           </AnimatedReveal>
 
           {/* Task list ya empty state */}
           <AnimatedReveal variant="slide-up" delay={250} duration={500}>
-            {!Array.isArray(tasks) || tasks.length === 0 ? (
+            {isTasksLoading ? (
+              Array.from({ length: 3 }).map((_, idx) => (
+                <TaskCard key={idx} isLoading={true} />
+              ))
+            ) : !Array.isArray(tasks) || tasks.length === 0 ? (
               // Koi task nahi — illustration + message + add button dikhao
               <TasksEmptyState filter={filter} />
             ) : (

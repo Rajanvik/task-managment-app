@@ -13,51 +13,12 @@ import { ReminderCard } from "./_components/reminder-card";
 import { FaqAccordion } from "./_components/faq-accordion";
 import { FooterCredit } from "./_components/footer-credit";
 
-/*
-class LocalErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: Error | null }> {
-  state = { hasError: false, error: null as Error | null };
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: any) {
-    console.error("LocalErrorBoundary caught an error:", error, errorInfo);
-    Alert.alert(
-      "Home Render Error",
-      `Message: ${error.message}\n\nStack: ${error.stack?.slice(0, 450)}`,
-      [{ text: "OK" }]
-    );
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#fff" }}>
-          <RNText style={{ fontSize: 18, fontWeight: "bold", color: "#ef4444", marginBottom: 10, textAlign: "center" }}>
-            Home Render Error
-          </RNText>
-          <RNText style={{ fontSize: 13, color: "#1f2937", textAlign: "center", marginBottom: 15, fontWeight: "600" }}>
-            {this.state.error?.message}
-          </RNText>
-          <ScrollView style={{ maxHeight: 300, width: "100%", backgroundColor: "#f3f4f6", padding: 10, borderRadius: 8 }}>
-            <RNText style={{ fontSize: 10, color: "#4b5563", fontFamily: "mono" }}>
-              {this.state.error?.stack}
-            </RNText>
-          </ScrollView>
-        </View>
-      );
-    }
-    return this.props.children;
-  }
-}
-*/
 
 interface IHomeScreenProps {}
 
 const HomeScreenContent: React.FC<IHomeScreenProps> = () => {
   // Dashboard analytics API se seedha stats lo — client-side calculations ki zarurat nahi
-  const { data: analytics } = DashboardDataHook.useDashboardAnalytics();
+  const { data: analytics, isLoading: isAnalyticsLoading } = DashboardDataHook.useDashboardAnalytics();
 
   const completedTasks = analytics?.summary?.completedTasks ?? 0;
   const pendingTasks = analytics?.summary?.pendingTasks ?? 0;
@@ -81,6 +42,7 @@ const HomeScreenContent: React.FC<IHomeScreenProps> = () => {
             <ProgressCard
               completedTasks={completedTasks}
               progressPercentage={progressPercentage}
+              isLoading={isAnalyticsLoading}
             />
           </AnimatedReveal>
 
@@ -90,6 +52,7 @@ const HomeScreenContent: React.FC<IHomeScreenProps> = () => {
               completedTasks={completedTasks}
               pendingTasks={pendingTasks}
               totalTasks={totalTasks}
+              isLoading={isAnalyticsLoading}
             />
           </AnimatedReveal>
 
@@ -121,9 +84,7 @@ const HomeScreenContent: React.FC<IHomeScreenProps> = () => {
 
 const HomeScreen: React.FC<IHomeScreenProps> = () => {
   return (
-    /* <LocalErrorBoundary> */
-      <HomeScreenContent />
-    /* </LocalErrorBoundary> */
+    <HomeScreenContent />
   );
 };
 

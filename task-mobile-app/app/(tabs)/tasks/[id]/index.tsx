@@ -1,9 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { Icon } from "@/components/ui/icon";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TaskDataHook } from "@/lib/data-hooks/tasks";
 import { parseLocalDate } from "@/lib/date";
 import type { SubTask } from "@/lib/types/tasks";
@@ -138,11 +138,99 @@ const TaskDetailsScreen: React.FC<ITaskDetailsScreenProps> = () => {
 
   if (isTaskLoading) {
     return (
-      <View className="flex-1 bg-background items-center justify-center p-6 gap-3">
-        <Spinner size={32} className="text-primary" />
-        <Text className="text-sm font-semibold text-muted-foreground">
-          Loading task details...
-        </Text>
+      <View className="flex-1 bg-background">
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        {/* Floating Header Back Button */}
+        <View className="absolute top-14 left-6 z-20 flex-row items-center gap-3">
+          <Button
+            variant="outline"
+            size="icon"
+            onPress={() => router.back()}
+            className="bg-card border border-border rounded-full h-11 w-11 shadow-lg shadow-black/15 flex items-center justify-center"
+          >
+            <Icon as={ChevronLeft} className="text-foreground" size={20} />
+          </Button>
+          <View className="bg-card px-4 py-2 rounded-full border border-border shadow-md">
+            <Text className="text-sm font-bold text-foreground tracking-wide">
+              Task Details
+            </Text>
+          </View>
+        </View>
+
+        <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+          {/* BANNER WITH ABSTRACT PATTERNS SKELETON */}
+          <View className="h-64 bg-secondary/40 relative overflow-hidden justify-end pb-8 px-6">
+            <View className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+            <View className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-background to-transparent" />
+
+            <View className="gap-2.5">
+              <Skeleton className="h-5 w-16 rounded-full" />
+              <Skeleton className="h-9 w-64 rounded-md mt-1" />
+            </View>
+          </View>
+
+          {/* DETAILS CONTAINER SKELETON */}
+          <View className="px-6 py-6 rounded-t-[40px] bg-background -mt-6 flex-1 min-h-[600px]">
+            {/* STATS MATRIX SKELETON */}
+            <View className="flex-row items-center gap-4 bg-secondary/30 border border-border/5 rounded-[28px] p-4 mb-6">
+              <View className="flex-1 flex-row items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <View className="gap-1.5">
+                  <Skeleton className="h-3 w-12 rounded-md" />
+                  <Skeleton className="h-4 w-24 rounded-md" />
+                </View>
+              </View>
+
+              <Separator orientation="vertical" className="h-8 opacity-40" />
+
+              <View className="flex-1 flex-row items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <View className="gap-1.5">
+                  <Skeleton className="h-3 w-12 rounded-md" />
+                  <Skeleton className="h-4 w-20 rounded-md" />
+                </View>
+              </View>
+            </View>
+
+            {/* TASK DESCRIPTION SKELETON */}
+            <View className="mb-6 bg-card border border-border/40 rounded-[28px] p-5 shadow-sm shadow-black/5 gap-3">
+              <View className="flex-row items-center gap-2 mb-1">
+                <Icon as={FileText} className="text-primary" size={18} />
+                <Skeleton className="h-5 w-32 rounded-md" />
+              </View>
+              <Skeleton className="h-4 w-full rounded-md" />
+              <Skeleton className="h-4 w-full rounded-md" />
+              <Skeleton className="h-4 w-3/4 rounded-md" />
+            </View>
+
+            {/* SUB-TASKS / CHECKLIST SKELETON */}
+            <View className="mb-8 bg-card border border-border/40 rounded-[28px] p-5 shadow-sm shadow-black/5 gap-3.5">
+              <View className="flex-row items-center gap-2 mb-1.5">
+                <Icon as={CheckSquare} className="text-primary" size={18} />
+                <Skeleton className="h-5 w-36 rounded-md" />
+              </View>
+
+              <View className="gap-3.5">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <View key={idx} className="flex-row items-center gap-3 py-1">
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                    <Skeleton className="h-4 flex-1 rounded-md" />
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* ACTION BUTTON SKELETON */}
+            <View className="pb-16">
+              <Skeleton className="h-14 w-full rounded-2xl" />
+            </View>
+          </View>
+        </ScrollView>
       </View>
     );
   }
