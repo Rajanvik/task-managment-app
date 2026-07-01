@@ -22,6 +22,15 @@ export function RecentTasksList() {
   const router = useRouter();
   const { data: tasks = [], isLoading } = TaskDataHook.useGetTasks();
 
+  // Get up to 3 most important pending or recently updated tasks
+  const displayTasks = React.useMemo(() => {
+    if (!Array.isArray(tasks)) return [];
+    // Show pending tasks first, then completed ones
+    const pending = tasks.filter((t: Task) => t.status === "Pending");
+    const completed = tasks.filter((t: Task) => t.status === "Completed");
+    return [...pending, ...completed].slice(0, 3);
+  }, [tasks]);
+
   if (isLoading) {
     return (
       <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl p-5 overflow-hidden">
@@ -57,15 +66,6 @@ export function RecentTasksList() {
       </Card>
     );
   }
-
-  // Get up to 3 most important pending or recently updated tasks
-  const displayTasks = React.useMemo(() => {
-    if (!Array.isArray(tasks)) return [];
-    // Show pending tasks first, then completed ones
-    const pending = tasks.filter((t: Task) => t.status === "Pending");
-    const completed = tasks.filter((t: Task) => t.status === "Completed");
-    return [...pending, ...completed].slice(0, 3);
-  }, [tasks]);
 
   return (
     <Card className="mb-3 bg-card border border-border/10 shadow-xl rounded-3xl p-5 overflow-hidden">
