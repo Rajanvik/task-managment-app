@@ -1,8 +1,8 @@
 import { toast } from "@/lib/toast";
 import { AuthService } from "@/services/auth";
-import { AuthResponse, Login, Register } from "@/lib/types/auth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { TMutationOptions, TMutationReturnType } from "../../types/types";
+import { AuthResponse, Login, Register, User } from "@/lib/types/auth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TMutationOptions, TMutationReturnType, TQueryOptions, TQueryReturnType } from "../../types/types";
 
 // 1. Hook types ki definition (Interface)
 export interface IAuthDataHook {
@@ -20,6 +20,11 @@ export interface IAuthDataHook {
   useLogout: (
     options?: TMutationOptions<void, Error, void>,
   ) => TMutationReturnType<void, void>;
+
+  // Profile get ke liye hook type definition
+  useProfile: (
+    options?: TQueryOptions<User>,
+  ) => TQueryReturnType<User>;
 }
 
 // 2. Auth hooks ki actual implementation jise components me use karenge
@@ -85,6 +90,15 @@ export const AuthDataHook: IAuthDataHook = {
         );
         (options?.onError as any)?.(error, variables, context);
       },
+    });
+  },
+
+  // 👤 Profile Hook: Active user details retrieve karne ke liye useQuery hook
+  useProfile(options) {
+    return useQuery({
+      queryKey: ["profile"],
+      queryFn: async () => await AuthService.getProfile(),
+      ...options,
     });
   },
 };

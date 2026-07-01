@@ -47,9 +47,6 @@ export function Toaster({ richColors, closeButton }: any) {
         return (
           <Animated.View
             key={toast.id}
-            layout={Layout.springify()}
-            entering={SlideInUp.duration(300)}
-            exiting={FadeOutUp.duration(200)}
             className={`border shadow-2xl shadow-black/20 rounded-2xl p-4 mb-3 w-[90%] flex-row items-center gap-3 ${bgClass}`}
             style={{ zIndex: 100 - index }}
           >

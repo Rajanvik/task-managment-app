@@ -24,6 +24,9 @@ export interface IAuthService {
 
   // logout method: session destroy operation perform karega
   logout: () => Promise<void>;
+
+  // getProfile method: active user details retrieve karega
+  getProfile: () => Promise<User>;
 }
 
 // 2. AuthService Object: Axios endpoints par requests bhejne ke liye (Clean & Optimal)
@@ -79,5 +82,13 @@ export const AuthService: IAuthService = {
       AUTH_KEYS.REFRESH_TOKEN,
       AUTH_KEYS.USER_DATA,
     ]);
+  },
+
+  // GetProfile action handler
+  async getProfile() {
+    const response = await axiosInstance.get<User>(
+      ENDPOINTS.AUTH.PROFILE
+    );
+    return response.data;
   },
 };

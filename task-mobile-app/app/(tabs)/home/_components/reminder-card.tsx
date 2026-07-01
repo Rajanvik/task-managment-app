@@ -105,12 +105,11 @@ export function ReminderCard() {
         {/* Status / Pending Summary */}
         <View className="bg-secondary/40 border border-border/10 rounded-2xl p-4 mb-5 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3 flex-1 mr-3">
-            <View
-              className={cn(
-                "h-2.5 w-2.5 rounded-full shrink-0",
-                pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-green-500"
-              )}
-            />
+            {pendingCount > 0 ? (
+              <View key="pulse-dot" className="h-2.5 w-2.5 rounded-full shrink-0 bg-amber-500 animate-pulse" />
+            ) : (
+              <View key="static-dot" className="h-2.5 w-2.5 rounded-full shrink-0 bg-green-500" />
+            )}
             <View className="flex-1">
               <Text className="text-xs font-semibold text-foreground">
                 {pendingCount > 0

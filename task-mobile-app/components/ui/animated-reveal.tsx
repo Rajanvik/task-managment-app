@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import Animated, { 
   FadeIn, 
   FadeInDown, 
